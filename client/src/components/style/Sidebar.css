@@ -1,0 +1,88 @@
+/* Sidebar.css */
+
+/* Общие стили для обеих тем */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    height: 100vh;
+    width: 250px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa; /* Светлый фон для светлой темы */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Тень для отделения панели */
+}
+
+/* Темная тема для Sidebar */
+.dark-theme .sidebar {
+    background-color: #343a40; /* Темный фон для темной темы */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Более темная тень для темной темы */
+}
+
+/* Светлая тема */
+.light-theme {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+/* Темная тема */
+.dark-theme {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Стили для темной темы */
+.dark-theme .nav-link {
+    color: #fff;
+}
+
+.dark-theme .nav-link:hover {
+    background-color: #495057;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        z-index: 999;
+    }
+
+    .sidebar h2 {
+        font-size: 1.5rem;
+        margin-top: 5.5rem;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar ul {
+        margin-top: 0rem; /* Отступ сверху для меню */
+    }
+
+    .burger-menu {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1000;
+        background: none;
+        border: none;
+        font-size: 2.5rem;
+    }
+
+    .light-theme .navbar-toggler-icon {
+        color: black;
+    }
+
+    .dark-theme .navbar-toggler-icon {
+        color: white;
+    }
+}
