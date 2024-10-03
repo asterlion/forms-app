@@ -1,0 +1,67 @@
+/* Auth.css */
+
+/* Основной контейнер */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #f8f9fa; /* Светлый фон */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта глубины */
+}
+
+/* Заголовок страниц регистрации и логина */
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Стили для формы */
+.auth-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-container .form-group label {
+    font-weight: bold;
+}
+
+.auth-container .form-control {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+/* Стили для кнопок */
+.auth-container .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    border-radius: 4px;
+}
+
+.auth-container .btn-outline-secondary {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.dark-theme .auth-container {
+    background-color: #617487;
+    color: #fff;
+}
+
+.dark-theme .btn-outline-secondary {
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Дополнительные стили для адаптации */
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 1rem;
+    }
+}

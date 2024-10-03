@@ -14,6 +14,10 @@ i18n
                     login: 'Вход',
                     switchLanguage: 'Переключить на английский',
                     SwitchTo: 'Переключить тему',
+                    email: 'Электронная почта',
+                    password: 'Пароль',
+                    username: 'Имя пользователя',
+                    confirmPassword: 'Подтверждение пароля',
                 },
             },
             en: {
@@ -24,11 +28,15 @@ i18n
                     login: 'Login',
                     switchLanguage: 'Switch to Russian',
                     SwitchTo: 'Switch theme',
+                    email: 'e-mail',
+                    password: 'Password',
+                    username: 'Username',
+                    confirmPassword: 'Confirm password',
                 },
             },
         },
-        lng: 'ru', // язык по умолчанию
-        fallbackLng: 'ru', // язык по умолчанию, если перевода нет
+        lng: 'en', // язык по умолчанию
+        fallbackLng: 'en', // язык по умолчанию, если перевода нет
         interpolation: {
             escapeValue: false, // React уже защищает от XSS
         },
