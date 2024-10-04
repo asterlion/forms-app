@@ -1,0 +1,21 @@
+@media (max-width: 768px) {
+    .profile-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        padding-top: 4rem;
+    }
+
+    .profile-page h2 {
+        margin-bottom: 1rem;
+    }
+
+    .profile-page h3 {
+        margin-bottom: 1rem;
+    }
+
+    .profile-page button {
+        margin-top: 1rem;
+    }
+}

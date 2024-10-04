@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import './style/Auth.css'; // Подключаем стили
+import { Link, useNavigate } from 'react-router-dom';
+import API_URL from '../config';
+import './style/Auth.css';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -17,10 +19,31 @@ const Login = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Логика обработки входа
-        console.log(formData);
+        try {
+            const response = await fetch(`${API_URL}/api/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            console.log("Server response:", data);
+
+            if (response.ok && data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', data.username);
+                onLogin(data.username);
+                navigate('/profile');
+            } else {
+                console.error('Login failed:', data.error);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error.message);
+        }
     };
 
     return (
@@ -52,7 +75,6 @@ const Login = () => {
                 <button type="submit" className="btn btn-primary">
                     {t('login')}
                 </button>
-                {/* Бледная кнопка для перехода на страницу регистрации */}
                 <Link to="/register" className="btn btn-outline-secondary">
                     {t('register')}
                 </Link>

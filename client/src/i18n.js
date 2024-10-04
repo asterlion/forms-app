@@ -2,6 +2,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+const language = localStorage.getItem('language') || 'en';
+
 i18n
     .use(initReactI18next)
     .init({
@@ -18,6 +20,9 @@ i18n
                     password: 'Пароль',
                     username: 'Имя пользователя',
                     confirmPassword: 'Подтверждение пароля',
+                    UserSuccessfullyRegistered: 'Пользователь успешно создан!',
+                    Success: 'Успешно!',
+                    hello: 'Добро пожаловать',
                 },
             },
             en: {
@@ -32,13 +37,16 @@ i18n
                     password: 'Password',
                     username: 'Username',
                     confirmPassword: 'Confirm password',
+                    UserSuccessfullyRegistered: 'User successfully registered !',
+                    Success: 'Success!',
+                    hello: 'Hello',
                 },
             },
         },
-        lng: 'en', // язык по умолчанию
+        lng: language, // язык по умолчанию
         fallbackLng: 'en', // язык по умолчанию, если перевода нет
         interpolation: {
-            escapeValue: false, // React уже защищает от XSS
+            escapeValue: false,
         },
     });
 

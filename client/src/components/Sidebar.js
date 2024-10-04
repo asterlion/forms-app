@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React, {useState, useEffect, useRef} from 'react';
+import {Link} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
 import './style/Sidebar.css';
 
 const Sidebar = () => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [theme, setTheme] = useState('light-theme');
-    const sidebarRef = useRef(null); // Создаём ссылку на сайдбар
+    const sidebarRef = useRef(null);
 
-    // При загрузке проверяем, какая тема сохранена в localStorage
     useEffect(() => {
         const savedTheme = localStorage.getItem('app-theme') || 'light-theme';
         setTheme(savedTheme);
@@ -18,7 +17,7 @@ const Sidebar = () => {
 
         // Функция для закрытия сайдбара при клике вне него
         const handleClickOutside = (event) => {
-            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target) && isOpen) {
                 setIsOpen(false);
             }
         };
@@ -30,23 +29,24 @@ const Sidebar = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [sidebarRef]);
+    }, [isOpen]);
 
     // Функция для переключения темы
     const toggleTheme = () => {
         const newTheme = theme === 'light-theme' ? 'dark-theme' : 'light-theme';
         setTheme(newTheme);
         document.body.className = newTheme;
-        localStorage.setItem('app-theme', newTheme); // Сохраняем тему в localStorage
+        localStorage.setItem('app-theme', newTheme);
+        setIsOpen(false);
     };
 
     const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+        setIsOpen(prevState => !prevState);
     };
 
     // Функция для закрытия сайдбара и перехода на страницу
     const handleMenuClick = () => {
-        setIsOpen(false); // Закрыть сайдбар
+        setIsOpen(false);
     };
 
     return (
@@ -85,12 +85,18 @@ const Sidebar = () => {
                     </li>
                 </ul>
 
-                {/* Кнопка переключения языка */}
-                <button onClick={() => i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru')} className="btn btn-secondary mt-3">
+                <button
+                    onClick={() => {
+                        const newLang = i18n.language === 'ru' ? 'en' : 'ru';
+                        i18n.changeLanguage(newLang);
+                        localStorage.setItem('language', newLang);
+                        setIsOpen(false);
+                    }}
+                    className="btn btn-secondary mt-3"
+                >
                     {t('switchLanguage')}
                 </button>
 
-                {/* Кнопка переключения темы */}
                 <button onClick={toggleTheme} className="btn btn-secondary mt-3">
                     {t('SwitchTo')} {theme === 'light-theme' ? '' : ''}
                 </button>

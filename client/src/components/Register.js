@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import API_URL from '../config';
+import SuccessModal from './SuccessModal';
 import './style/Auth.css';
+import {useNavigate} from "react-router-dom";
 
 const Register = ({onLogin}) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -20,9 +25,8 @@ const Register = ({onLogin}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            const response = await fetch('http://localhost:3000/api/register', {
+            const response = await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,11 +35,18 @@ const Register = ({onLogin}) => {
             });
 
             const data = await response.json();
+            console.log("Ответ от сервера:", data);
 
             if (response.ok) {
                 console.log('Registration successful:', data);
                 if (data.success) {
-                    onLogin(formData.username);
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
+                    setShowSuccessModal(true);
+                    setTimeout(() => {
+                        onLogin(formData.username);
+                        navigate('/profile');
+                    }, 2000);
                 }
             } else {
                 console.error('Registration failed:', data.error);
@@ -45,6 +56,7 @@ const Register = ({onLogin}) => {
         }
     };
 
+    const handleCloseSuccessModal = () => setShowSuccessModal(false);
 
     return (
         <div className="auth-container">
@@ -98,6 +110,7 @@ const Register = ({onLogin}) => {
                     {t('register')}
                 </button>
             </form>
+            <SuccessModal show={showSuccessModal} handleClose={handleCloseSuccessModal}/>
         </div>
     );
 };

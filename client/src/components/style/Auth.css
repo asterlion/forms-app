@@ -1,19 +1,18 @@
-/* Auth.css */
-
-/* Основной контейнер */
 .auth-container {
     max-width: 400px;
-    margin: 0 auto;
+    margin: 2rem auto; /* Добавлено отступ сверху и снизу */
     padding: 2rem;
     background-color: #f8f9fa; /* Светлый фон */
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта глубины */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта глубины */
+    transition: background-color 0.3s ease; /* Плавный переход фона */
 }
 
 /* Заголовок страниц регистрации и логина */
 .auth-container h2 {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem; /* Уменьшен отступ снизу */
+    font-size: 1.5rem; /* Увеличен размер шрифта */
 }
 
 /* Стили для формы */
@@ -23,6 +22,7 @@
 
 .auth-container .form-group label {
     font-weight: bold;
+    font-size: 0.9rem; /* Уменьшен размер шрифта */
 }
 
 .auth-container .form-control {
@@ -30,6 +30,12 @@
     font-size: 1rem;
     border-radius: 4px;
     border: 1px solid #ced4da;
+    transition: border-color 0.2s; /* Плавный переход цвета рамки */
+}
+
+.auth-container .form-control:focus {
+    border-color: #007bff; /* Цвет рамки при фокусе */
+    outline: none; /* Убираем стандартный контур */
 }
 
 /* Стили для кнопок */
@@ -38,6 +44,13 @@
     padding: 0.75rem;
     font-size: 1.1rem;
     border-radius: 4px;
+    background-color: #007bff; /* Цвет фона кнопки */
+    border: none; /* Убираем рамку */
+    transition: background-color 0.3s; /* Плавный переход цвета фона */
+}
+
+.auth-container .btn-primary:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
 }
 
 .auth-container .btn-outline-secondary {
@@ -49,6 +62,7 @@
     text-align: center;
 }
 
+/* Темная тема */
 .dark-theme .auth-container {
     background-color: #617487;
     color: #fff;
@@ -62,6 +76,26 @@
 /* Дополнительные стили для адаптации */
 @media (max-width: 576px) {
     .auth-container {
-        padding: 1rem;
+        padding: 1.5rem;
+        margin-top: 4.5rem;
+        border-radius: 12px; /* Скругление углов для более плавного вида */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Увеличена тень для лучшего эффекта глубины */
+    }
+
+    .auth-container h2 {
+        font-size: 1.3rem; /* Уменьшен размер заголовка на мобильных */
+    }
+
+    .auth-container .form-group label {
+        font-size: 0.8rem; /* Уменьшен размер шрифта для лейблов */
+    }
+
+    .auth-container .form-control {
+        font-size: 0.9rem; /* Уменьшен размер шрифта для инпутов */
+    }
+
+    .auth-container .btn-primary,
+    .auth-container .btn-outline-secondary {
+        font-size: 1rem; /* Уменьшен размер шрифта для кнопок */
     }
 }
