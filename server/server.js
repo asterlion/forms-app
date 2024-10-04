@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const {User, Role} = require('./models');
@@ -6,13 +7,16 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const secretKey = '7554817';
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Настройка CORS
 const corsOptions = {
-    origin: 'http://localhost:3001', // Укажите URL вашего клиента
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Укажите методы, которые вы хотите разрешить
-    allowedHeaders: ['Content-Type', 'Authorization'], // Укажите заголовки, которые вы хотите разрешить
+    origin: [
+        'http://localhost:3001',
+        'https://astreiko-itransition.online'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
