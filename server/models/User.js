@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false // Отключает автоматические поля createdAt и updatedAt
     });
 
-    User.associate = function(models) {
-        User.belongsToMany(models.Role, { through: 'UserRole', foreignKey: 'user_id' });
+    User.associate = function (models) {
+        User.belongsToMany(models.Role, {through: 'UserRole', foreignKey: 'user_id', otherKey: 'role_id'});
     };
 
     return User;

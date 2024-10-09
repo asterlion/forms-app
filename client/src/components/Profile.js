@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './style/Profile.css';
@@ -6,6 +6,13 @@ import './style/Profile.css';
 const Profile = ({ username }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username');
+        if (!storedUsername) {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');

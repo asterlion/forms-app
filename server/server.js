@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const {User, Role} = require('./models');
 const app = express();
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const secretKey = '7554817';
 const port = process.env.PORT || 3000;
@@ -28,7 +28,6 @@ app.get('/', (req, res) => {
     res.send('Server is running!');
 });
 
-// Запуск сервера
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
@@ -104,3 +103,4 @@ app.post('/api/login', async (req, res) => {
         res.status(500).send('Ошибка сервера при входе.');
     }
 });
+

@@ -1,0 +1,88 @@
+.home-page {
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Список карточек */
+.template-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* Стиль карточек для светлой и темной темы */
+.template-card {
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.template-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Текст заголовка карточки */
+.template-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Стили для модального окна */
+.modal-body form {
+    margin-top: 1rem;
+}
+
+/* Светлая тема */
+.light-theme .home-page {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.light-theme .template-card {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+.light-theme .template-card:hover {
+    background-color: #e2e6ea;
+}
+
+/* Темная тема */
+.dark-theme .home-page {
+    background-color: #404950;
+    color: #ffffff;
+}
+
+.dark-theme .template-card {
+    background-color: #617487;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .template-card:hover {
+    background-color: #474849;
+}
+
+/* Темная тема для модальных окон */
+.dark-theme .modal-content {
+    background-color: #3a3b3c;
+    color: #ffffff;
+}
+
+.dark-theme .modal-header, .dark-theme .modal-footer {
+    border-color: #474849;
+}
+
+.dark-theme .form-control {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    border: 1px solid #474849;
+}
+
+.dark-theme .form-control::placeholder {
+    color: #a9a9a9;
+}

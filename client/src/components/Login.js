@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import API_URL from '../config';
 import './style/Auth.css';
 
@@ -11,6 +12,8 @@ const Login = ({ onLogin }) => {
         email: '',
         password: '',
     });
+    const [showModal, setShowModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -39,10 +42,13 @@ const Login = ({ onLogin }) => {
                 onLogin(data.username);
                 navigate('/profile');
             } else {
-                console.error('Login failed:', data.error);
+                setErrorMessage(data.error || t('error_generic'));
+                setShowModal(true);
             }
         } catch (error) {
             console.error('An error occurred:', error.message);
+            setErrorMessage(t('error_generic'));
+            setShowModal(true);
         }
     };
 
@@ -79,6 +85,18 @@ const Login = ({ onLogin }) => {
                     {t('register')}
                 </Link>
             </form>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t('error_title')}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{errorMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        {t('try_again')}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

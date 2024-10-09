@@ -7,19 +7,19 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Users', // Название таблицы пользователей
-                    key: 'id',      // Поле для ссылки
+                    model: 'Users',
+                    key: 'id',
                 },
-                onDelete: 'CASCADE', // Удалять роли, если пользователь удалён
+                onDelete: 'CASCADE',
             },
             role_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Roles', // Название таблицы ролей
-                    key: 'id',      // Поле для ссылки
+                    model: 'Roles',
+                    key: 'id',
                 },
-                onDelete: 'CASCADE', // Удалять связи, если роль удалена
+                onDelete: 'CASCADE',
             },
             createdAt: {
                 allowNull: false,
