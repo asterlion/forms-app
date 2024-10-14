@@ -44,7 +44,7 @@ const Sidebar = () => {
         setIsOpen(prevState => !prevState);
     };
 
-    // Функция для закрытия сайдбара и перехода на страницу
+
     const handleMenuClick = () => {
         setIsOpen(false);
     };
@@ -65,21 +65,25 @@ const Sidebar = () => {
                 <ul className="nav nav-pills flex-column mb-auto">
                     <li className="nav-item">
                         <Link to="/" className="nav-link" onClick={handleMenuClick}>
+                            <i className="fa fa-home"></i>
                             {t('home')}
                         </Link>
                     </li>
                     <li>
                         <Link to="/profile" className="nav-link" onClick={handleMenuClick}>
+                            <i className="fa fa-user"></i>
                             {t('profile')}
                         </Link>
                     </li>
                     <li>
                         <Link to="/register" className="nav-link" onClick={handleMenuClick}>
+                            <i className="fa fa-user-plus"></i>
                             {t('register')}
                         </Link>
                     </li>
                     <li>
                         <Link to="/login" className="nav-link" onClick={handleMenuClick}>
+                            <i className="fa fa-sign-in"></i>
                             {t('login')}
                         </Link>
                     </li>

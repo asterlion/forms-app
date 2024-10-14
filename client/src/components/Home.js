@@ -18,7 +18,7 @@ const Home = ({isAuthenticated}) => {
     ];
 
     const handleCreateNewForm = () => {
-        setSelectedTemplate({title: 'Create New Form', description: 'Start from scratch.'});
+        setSelectedTemplate({title: t('Create_New_Form'), description: t('Start_from_scratch')});
         setShowModal(true);
     };
 
@@ -63,7 +63,7 @@ const Home = ({isAuthenticated}) => {
                         <Modal.Title>{selectedTemplate.title}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {selectedTemplate.title === 'Create New Form' ? (
+                        {selectedTemplate.title === 'CreateNewForm' ? (
                             <>
                                 <p>{selectedTemplate.description}</p>
                                 <Form.Group controlId="formName">

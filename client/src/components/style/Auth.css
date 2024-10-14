@@ -73,6 +73,21 @@
     border-color: #fff;
 }
 
+.dark-theme .auth-container input:disabled {
+    background-color: #d3d3d3; /* Светло-серый фон для неактивного инпута */
+    color: #000; /* Черный текст в инпуте */
+    cursor: not-allowed; /* Курсор для неактивного инпута */
+}
+
+.dark-theme .auth-container input {
+    background-color: #e9ecef; /* Фон для активного инпута */
+    color: #000;
+}
+
+.dark-theme .auth-container input::placeholder {
+    color: #ccc; /* Цвет текста плейсхолдера для активного инпута */
+}
+
 /* Дополнительные стили для адаптации */
 @media (max-width: 576px) {
     .auth-container {

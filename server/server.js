@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const {User, Role} = require('./models');
+const {User, Role, Question, Template, TemplateQuestions} = require('./models');
 const app = express();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -103,4 +103,35 @@ app.post('/api/login', async (req, res) => {
         res.status(500).send('Ошибка сервера при входе.');
     }
 });
+
+app.post('/api/forms', async (req, res) => {
+    const { name, description, questions } = req.body;
+
+    // Создаем запись формы в базе данных
+    const form = await Template.create({ name, description });
+
+    // Проходим по каждому вопросу и сохраняем его
+    for (let question of questions) {
+        const createdQuestion = await Question.create({
+            text: question.text,
+            type: question.type,
+        });
+        // Если это вопрос с вариантами ответов
+        if (question.options.length) {
+            for (let option of question.options) {
+                await Option.create({
+                    text: option,
+                    questionId: createdQuestion.id,
+                });
+            }
+        }
+        await TemplateQuestions.create({
+            formId: form.id,
+            questionId: createdQuestion.id,
+        });
+    }
+
+    res.status(201).send({ message: 'Form created successfully' });
+});
+
 

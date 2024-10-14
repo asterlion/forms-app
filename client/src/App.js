@@ -1,4 +1,5 @@
 import './App.css';
+import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
@@ -6,6 +7,8 @@ import Home from './components/Home';
 import Register from './components/Register';
 import Login from './components/Login';
 import Profile from './components/Profile';
+import CreateFormPage from './components/CreateFormPage';
+import PrivateRoute from './components/PrivateRoute';
 import './i18n';
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
                         <Route path="/profile" element={<Profile username={username} />} />
                         <Route path="/register" element={<Register onLogin={handleLogin} />} />
                         <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                        <Route element={<PrivateRoute />}>
+                            <Route path="/create-form" element={<CreateFormPage />} />
+                        </Route>
                     </Routes>
                 </div>
             </div>

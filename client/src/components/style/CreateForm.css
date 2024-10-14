@@ -1,0 +1,50 @@
+.create-form-page {
+    padding: 2rem;
+    background-color: #f9f9f9;
+}
+
+.create-form-page .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.questions-list {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.create-form-page button {
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.create-form-page button:hover {
+    background-color: #0056b3;
+}
+
+.create-form-page button:last-child {
+    margin-right: 0;
+}
+
+.create-form-page .btn-save {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.create-form-page .btn-save:hover {
+    background-color: #218838;
+}
+
+@media (max-width: 768px) {
+    .create-form-page button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+}
