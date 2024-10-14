@@ -5,6 +5,7 @@ const {User, Role, Question, Template, TemplateQuestions} = require('./models');
 const app = express();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const secretKey = '7554817';
 const port = process.env.PORT || 3000;
@@ -20,8 +21,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// Middleware для парсинга JSON
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {

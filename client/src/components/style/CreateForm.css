@@ -1,31 +1,58 @@
 .create-form-page {
     padding: 2rem;
-    background-color: #f9f9f9;
+    background-color: #f8f9fa; /* Светлый фон */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта глубины */
+    transition: background-color 0.3s ease; /* Плавный переход фона */
+    color: #000; /* Цвет текста в светлой теме */
 }
 
+/* Заголовок страницы создания формы */
+.create-form-page h2 {
+    text-align: center;
+    margin-bottom: 1.5rem; /* Уменьшен отступ снизу */
+    font-size: 1.5rem; /* Увеличен размер шрифта */
+}
+
+/* Стили для формы */
 .create-form-page .form-group {
     margin-bottom: 1.5rem;
 }
 
-.questions-list {
-    margin-top: 1.5rem;
-    margin-bottom: 2rem;
+.create-form-page .form-group label {
+    font-weight: bold;
+    font-size: 0.9rem; /* Уменьшен размер шрифта */
 }
 
+.create-form-page .form-control {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s; /* Плавный переход цвета рамки */
+}
+
+.create-form-page .form-control:focus {
+    border-color: #007bff; /* Цвет рамки при фокусе */
+    outline: none; /* Убираем стандартный контур */
+}
+
+/* Стили для кнопок */
 .create-form-page button {
     margin-right: 1rem;
     margin-bottom: 1rem;
+    margin-top: 1rem;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    transition: background-color 0.3s ease;
+    background-color: #007bff; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убираем рамку */
+    transition: background-color 0.3s ease; /* Плавный переход цвета фона */
 }
 
 .create-form-page button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Цвет фона при наведении */
 }
 
 .create-form-page button:last-child {
@@ -33,15 +60,54 @@
 }
 
 .create-form-page .btn-save {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: #28a745; /* Цвет фона для кнопки "Сохранить" */
+    border-color: #28a745; /* Цвет границы для кнопки "Сохранить" */
 }
 
 .create-form-page .btn-save:hover {
-    background-color: #218838;
+    background-color: #218838; /* Цвет фона при наведении для кнопки "Сохранить" */
 }
 
+/* Темная тема */
+.dark-theme .create-form-page {
+    background-color: #617487; /* Темный фон */
+    color: #ffffff; /* Белый текст */
+}
+
+.dark-theme .create-form-page .form-control {
+    background-color: #ced4da; /* Фон инпутов в темной теме */
+    color: #000; /* Тёмный текст в инпуте */
+    border: 1px solid #666; /* Цвет границы для инпутов */
+}
+
+.dark-theme .create-form-page .form-control:focus {
+    border-color: #007bff; /* Цвет рамки при фокусе */
+}
+
+.dark-theme .create-form-page button {
+    background-color: #444; /* Темный фон для кнопок */
+    color: #ffffff; /* Белый текст для кнопок */
+}
+
+.dark-theme .create-form-page button:hover {
+    background-color: #666; /* Светлее при наведении */
+}
+
+.dark-theme .create-form-page .btn-save {
+    background-color: #4caf50; /* Темный фон для кнопки "Сохранить" */
+    border-color: #4caf50; /* Цвет границы для кнопки "Сохранить" */
+}
+
+.dark-theme .create-form-page .btn-save:hover {
+    background-color: #388e3c; /* Светлее при наведении для кнопки "Сохранить" */
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
+    .create-form-page {
+        padding: 1.5rem;
+    }
+
     .create-form-page button {
         width: 100%;
         margin-right: 0;

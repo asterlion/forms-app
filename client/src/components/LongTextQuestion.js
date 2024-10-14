@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import './style/CreateForm.css';
+import {useTranslation} from "react-i18next";
 
 
 const LongTextQuestion = ({ question, onUpdate }) => {
+    const { t } = useTranslation();
     const [text, setText] = useState(question.text || '');
 
     const handleQuestionChange = (e) => {
@@ -14,7 +16,7 @@ const LongTextQuestion = ({ question, onUpdate }) => {
     return (
         <div className="long-text-question">
             <Form.Group>
-                <Form.Label>Question Text</Form.Label>
+                <Form.Label>{t('Question_Text')}</Form.Label>
                 <Form.Control
                     as="textarea"
                     rows={3}

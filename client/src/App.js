@@ -1,5 +1,4 @@
 import './App.css';
-import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';

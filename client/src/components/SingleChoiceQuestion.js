@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import {useTranslation} from "react-i18next";
 
 const SingleChoiceQuestion = ({ question, onUpdate }) => {
+    const { t } = useTranslation();
     const [options, setOptions] = useState(question.options || []);
     const [text, setText] = useState(question.text || '');
 
@@ -24,7 +26,7 @@ const SingleChoiceQuestion = ({ question, onUpdate }) => {
     return (
         <div className="single-choice-question">
             <Form.Group>
-                <Form.Label>Question Text</Form.Label>
+                <Form.Label>{t('Question_Text')}</Form.Label>
                 <Form.Control
                     type="text"
                     value={text}
@@ -41,7 +43,7 @@ const SingleChoiceQuestion = ({ question, onUpdate }) => {
                     />
                 </Form.Group>
             ))}
-            <Button onClick={handleAddOption}>Add Option</Button>
+            <Button onClick={handleAddOption}>{t('Add_Option')}</Button>
         </div>
     );
 };

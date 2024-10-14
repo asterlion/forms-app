@@ -5,8 +5,10 @@ import ShortTextQuestion from './ShortTextQuestion';
 import LongTextQuestion from './LongTextQuestion';
 import { Button, Form } from 'react-bootstrap';
 import './style/CreateForm.css';
+import {useTranslation} from "react-i18next";
 
 const CreateFormPage = () => {
+    const { t } = useTranslation();
     const [formName, setFormName] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
@@ -44,7 +46,7 @@ const CreateFormPage = () => {
     return (
         <div className="create-form-page">
             <Form.Group>
-                <Form.Label>Form Name</Form.Label>
+                <Form.Label>{t('form_title')}</Form.Label>
                 <Form.Control
                     type="text"
                     value={formName}
@@ -52,7 +54,7 @@ const CreateFormPage = () => {
                 />
             </Form.Group>
             <Form.Group>
-                <Form.Label>Description</Form.Label>
+                <Form.Label>{t('form_description')}</Form.Label>
                 <Form.Control
                     as="textarea"
                     value={description}
@@ -76,13 +78,14 @@ const CreateFormPage = () => {
                     }
                 })}
             </div>
+            <p>{t('add_question')}</p>
 
-            <Button onClick={() => handleAddQuestion('single_choice')}>Add Single Choice Question</Button>
-            <Button onClick={() => handleAddQuestion('multiple_choice')}>Add Multiple Choice Question</Button>
-            <Button onClick={() => handleAddQuestion('short_text')}>Add Short Text Question</Button>
-            <Button onClick={() => handleAddQuestion('long_text')}>Add Long Text Question</Button>
+            <Button onClick={() => handleAddQuestion('single_choice')}>{t('single_choice')}</Button>
+            <Button onClick={() => handleAddQuestion('multiple_choice')}>{t('multiple_choice')}</Button>
+            <Button onClick={() => handleAddQuestion('short_text')}>{t('short_answer')}</Button>
+            <Button onClick={() => handleAddQuestion('long_text')}>{t('long_answer')}</Button>
 
-            <Button onClick={handleSaveForm}>Save Form</Button>
+            <Button onClick={handleSaveForm}>{t('save_form')}</Button>
         </div>
     );
 };
