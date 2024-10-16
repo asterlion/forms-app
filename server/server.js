@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const {User, Role, Question, Template, TemplateQuestions} = require('./models');
+const {User, Role, Question, Template, TemplateQuestions, Option} = require('./models');
 const app = express();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -14,6 +14,7 @@ const port = process.env.PORT || 3000;
 const corsOptions = {
     origin: [
         'http://localhost:3001',
+        'http://localhost:3001/',
         'https://astreiko-itransition.online'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -30,6 +31,19 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, secretKey, (err, user) => {
+        if (err) return res.sendStatus(403); //
+        req.user = user;
+        next();
+    });
+};
 
 // Маршрут для регистрации пользователей
 app.post('/api/register', async (req, res) => {
@@ -103,20 +117,31 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-app.post('/api/forms', async (req, res) => {
+// Маршрут для создания формы
+app.post('/api/forms', authenticateToken, async (req, res) => {
+    console.log('Received form data:', req.body);
+    console.log('User ID from token:', req.user.userId);
+
     const { name, description, questions } = req.body;
 
+    if (!req.user.userId) {
+        return res.status(400).send({ message: 'User ID is required' });
+    }
+
     // Создаем запись формы в базе данных
-    const form = await Template.create({ name, description });
+    const form = await Template.create({ name, description, userId: req.user.userId });
 
     // Проходим по каждому вопросу и сохраняем его
-    for (let question of questions) {
+    for (let index = 0; index < questions.length; index++) {
+        const question = questions[index];
+
         const createdQuestion = await Question.create({
             text: question.text,
             type: question.type,
         });
+
         // Если это вопрос с вариантами ответов
-        if (question.options.length) {
+        if (question.options && question.options.length) {
             for (let option of question.options) {
                 await Option.create({
                     text: option,
@@ -124,13 +149,29 @@ app.post('/api/forms', async (req, res) => {
                 });
             }
         }
+
+        // Сохраняем связь между формой и вопросом с указанием порядка и templateId
         await TemplateQuestions.create({
-            formId: form.id,
+            question_order: index + 1, // Указываем порядок вопроса (начиная с 1)
             questionId: createdQuestion.id,
+            templateId: form.id, // Передаем templateId
         });
     }
 
     res.status(201).send({ message: 'Form created successfully' });
 });
 
+app.get('/api/forms', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        const forms = await Template.findAll({
+            where: { userId }
+        });
+        res.json(forms);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+    }
+});
 

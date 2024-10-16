@@ -1,3 +1,4 @@
+/* Адаптация профиля для мобильных устройств */
 @media (max-width: 768px) {
     .profile-page {
         display: flex;
@@ -17,5 +18,24 @@
 
     .profile-page button {
         margin-top: 1rem;
+    }
+
+    .template-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .template-card {
+        width: 90%;
+        padding: 15px;
+    }
+
+    /* Модальное окно */
+    .modal-content {
+        width: 90%;
+        margin: 0 auto;
     }
 }
