@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Link, useNavigate} from 'react-router-dom';
+import {Modal, Button} from 'react-bootstrap';
 import API_URL from '../config';
 import './style/Auth.css';
 
-const Login = ({ onLogin }) => {
-    const { t } = useTranslation();
+const Login = ({onLogin}) => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',

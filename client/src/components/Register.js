@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import API_URL from '../config';
 import SuccessModal from './SuccessModal';
 import './style/Auth.css';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Register = ({onLogin}) => {
-    const {t} = useTranslation();
+const Register = ({ onLogin }) => {
+    const { t } = useTranslation();
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
@@ -25,6 +26,12 @@ const Register = ({onLogin}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            setErrorMessage(t('passwords_must_match'));
+            return;
+        }
+
         try {
             const response = await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
@@ -37,21 +44,20 @@ const Register = ({onLogin}) => {
             const data = await response.json();
             console.log("Ответ от сервера:", data);
 
-            if (response.ok) {
-                console.log('Registration successful:', data);
-                if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('username', data.username);
-                    setShowSuccessModal(true);
-                    setTimeout(() => {
-                        onLogin(formData.username);
-                        navigate('/profile');
-                    }, 2000);
-                }
+            if (response.ok && data.success) {
+                // Успешная регистрация
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', data.username);
+                setShowSuccessModal(true);
+                setTimeout(() => {
+                    onLogin(data.username);  // Используем имя пользователя от сервера
+                    navigate('/profile');
+                }, 2000);
             } else {
-                console.error('Registration failed:', data.error);
+                setErrorMessage(data.error || t('error_generic'));
             }
         } catch (error) {
+            setErrorMessage(t('error_generic'));
             console.error('An error occurred:', error.message);
         }
     };
@@ -106,11 +112,14 @@ const Register = ({onLogin}) => {
                         required
                     />
                 </div>
+
+                {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
                 <button type="submit" className="btn btn-primary">
                     {t('register')}
                 </button>
             </form>
-            <SuccessModal show={showSuccessModal} handleClose={handleCloseSuccessModal}/>
+            <SuccessModal show={showSuccessModal} handleClose={handleCloseSuccessModal} />
         </div>
     );
 };

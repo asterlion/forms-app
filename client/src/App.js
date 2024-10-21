@@ -19,17 +19,23 @@ function App() {
         localStorage.setItem('username', username);
     };
 
+    const handleLogout = () => {
+        setUsername('');
+        localStorage.removeItem('username');
+        localStorage.removeItem('token');
+    };
+
     return (
         <Router>
             <div className="d-flex">
-                <Sidebar />
+                <Sidebar isAuthenticated={isAuthenticated} username={username} onLogout={handleLogout} />
                 <div className="flex-grow-1 p-3">
                     <Routes>
                         <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
                         <Route path="/profile" element={<Profile username={username} />} />
                         <Route path="/register" element={<Register onLogin={handleLogin} />} />
                         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                        <Route element={<PrivateRoute />}>
+                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
                             <Route path="/create-form" element={<CreateFormPage />} />
                         </Route>
                     </Routes>

@@ -1,54 +1,74 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useTranslation} from 'react-i18next';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import API_URL from '../config';
 import './style/Profile.css';
-import {Modal, Button} from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 
-const Profile = ({username}) => {
-    const {t} = useTranslation();
+const Profile = ({ username }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [forms, setForms] = useState([]);
     const [selectedForm, setSelectedForm] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [questions, setQuestions] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
     const token = localStorage.getItem('token');
 
     const fetchForms = useCallback(async () => {
-        const response = await fetch(`${API_URL}/api/forms`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/api/forms`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
 
-        if (!response.ok) {
-            console.error('Failed to fetch forms:', response.statusText);
-            return;
+            if (!response.ok) {
+                throw new Error(t('fetch_forms_error'));
+            }
+
+            const data = await response.json();
+            setForms(data);
+        } catch (error) {
+            console.error('Error fetching forms:', error.message);
+            setErrorMessage(error.message);
         }
+    }, [token, t]);
 
-        const data = await response.json();
-        setForms(data);
-    }, [token]);
+    const fetchQuestions = useCallback(async (formId) => {
+        try {
+            const response = await fetch(`${API_URL}/api/questions/${formId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(t('fetch_questions_error'));
+            }
+
+            const data = await response.json();
+            setQuestions(data);
+        } catch (error) {
+            console.error('Error fetching questions:', error.message);
+            setErrorMessage(error.message);
+        }
+    }, [token, t]);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         if (!storedUsername) {
             navigate('/login');
         } else {
-            fetchForms().catch(error => {
-                console.error("Error fetching forms:", error);
-            });
+            fetchForms();
         }
     }, [navigate, fetchForms]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        navigate('/login');
-    };
-
-    const handleFormClick = (form) => {
+    const handleFormClick = async (form) => {
         setSelectedForm(form);
+        await fetchQuestions(form.id);
         setShowModal(true);
     };
 
@@ -59,17 +79,17 @@ const Profile = ({username}) => {
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedForm(null);
+        setQuestions([]);
     };
 
     return (
         <div className="profile-page">
             <h2>{t('profile')}</h2>
             <h3>{t('hello')}, {username}!</h3>
-            <button onClick={handleLogout} className="btn btn-danger">
-                {t('Logout')}
-            </button>
 
             <h4>{t('Your_Forms')}:</h4>
+
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
             <div className="template-list">
                 {forms.map((form) => (
@@ -87,15 +107,17 @@ const Profile = ({username}) => {
                     </Modal.Header>
                     <Modal.Body>
                         <p>{selectedForm.description}</p>
-                        {selectedForm.questions && selectedForm.questions.length > 0 && (
+                        {questions.length > 0 ? (
                             <div>
                                 <h4>{t('Questions')}</h4>
                                 <ul>
-                                    {selectedForm.questions.map((question) => (
+                                    {questions.map((question) => (
                                         <li key={question.id}>{question.text}</li>
                                     ))}
                                 </ul>
                             </div>
+                        ) : (
+                            <p>{t('No_questions')}</p>
                         )}
                     </Modal.Body>
                     <Modal.Footer>

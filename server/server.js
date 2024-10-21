@@ -175,3 +175,16 @@ app.get('/api/forms', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/api/questions/${formId}', authenticateToken, async (req, res) => {
+
+    try {
+        const forms = await Template.findAll({
+            where: { userId }
+        });
+        res.json(forms);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+    }
+});
+
