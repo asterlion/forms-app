@@ -10,14 +10,14 @@ const EditForm = () => {
     const [form, setForm] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [questions, setQuestions] = useState([]); // Состояние для вопросов
+    const [questions, setQuestions] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const fetchFormData = async () => {
-        console.log('Form ID:', formId); // Логируем ID формы
+        console.log('Form ID:', formId);
 
-        const token = localStorage.getItem('token'); // Получаем токен
+        const token = localStorage.getItem('token');
 
         if (!token) {
             console.error('Токен отсутствует, перенаправляем на страницу логина');
@@ -29,11 +29,11 @@ const EditForm = () => {
             const response = await fetch(`${API_URL}/api/edit-form/${formId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Добавляем токен в заголовок
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
-            console.log('Response status:', response.status); // Логируем статус ответа
+            console.log('Response status:', response.status);
 
             if (!response.ok) {
                 throw new Error('Не удалось загрузить данные формы');
@@ -47,7 +47,7 @@ const EditForm = () => {
             setForm(data);
             setTitle(data.name);
             setDescription(data.description);
-            setQuestions(data.questions || []); // Устанавливаем вопросы, если они есть
+            setQuestions(data.questions || []);
         } catch (error) {
             console.error('Ошибка загрузки формы:', error.message);
             setErrorMessage(error.message);
@@ -69,7 +69,7 @@ const EditForm = () => {
                 body: JSON.stringify({
                     name: title,
                     description: description,
-                    questions: questions, // Отправляем вопросы на сервер
+                    questions: questions,
                 }),
             });
 
@@ -77,7 +77,7 @@ const EditForm = () => {
                 throw new Error('Не удалось обновить форму');
             }
 
-            navigate('/profile'); // Перенаправляем на страницу профиля после успешного редактирования
+            navigate('/profile');
         } catch (error) {
             console.error('Ошибка редактирования формы:', error.message);
             setErrorMessage(error.message);
@@ -86,17 +86,17 @@ const EditForm = () => {
 
     const handleQuestionChange = (index, event) => {
         const newQuestions = [...questions];
-        newQuestions[index].text = event.target.value; // Изменяем текст вопроса
+        newQuestions[index].text = event.target.value;
         setQuestions(newQuestions);
     };
 
     const handleAddQuestion = () => {
-        const newQuestion = { id: Date.now(), text: '' }; // Создаем новый вопрос
+        const newQuestion = { id: Date.now(), text: '' };
         setQuestions([...questions, newQuestion]);
     };
 
     const handleRemoveQuestion = (index) => {
-        const newQuestions = questions.filter((_, i) => i !== index); // Удаляем вопрос по индексу
+        const newQuestions = questions.filter((_, i) => i !== index);
         setQuestions(newQuestions);
     };
 
