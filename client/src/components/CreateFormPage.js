@@ -4,15 +4,18 @@ import SingleChoiceQuestion from './SingleChoiceQuestion';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import ShortTextQuestion from './ShortTextQuestion';
 import LongTextQuestion from './LongTextQuestion';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import './style/CreateForm.css';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const CreateFormPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [formName, setFormName] = useState('');
     const [description, setDescription] = useState('');
     const [questions, setQuestions] = useState([]);
+    const [showModal, setShowModal] = useState(false); // Состояние для управления модальным окном
 
     const handleDeleteQuestion = (id) => {
         setQuestions(questions.filter(q => q.id !== id));
@@ -38,7 +41,6 @@ const CreateFormPage = () => {
         const token = localStorage.getItem('token');
         console.log('Form data to be saved:', formData);
 
-        // Используем корректное вставление переменной API_URL
         fetch(`${API_URL}/api/forms`, {
             method: 'POST',
             headers: {
@@ -49,23 +51,26 @@ const CreateFormPage = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    // Если сервер вернул статус ошибки, выбрасываем ошибку
                     throw new Error('Failed to save form, status: ' + response.status);
                 }
                 return response.json();
             })
             .then(data => {
-                // Успешное сохранение формы
                 console.log('Form saved successfully:', data);
+                setShowModal(true); // Показать модальное окно
             })
             .catch(error => {
-                // Обработка ошибки
                 console.error('Error saving form:', error.message || error);
             });
     };
 
     const handleQuestionUpdate = (id, updatedQuestion) => {
         setQuestions(questions.map(q => (q.id === id ? updatedQuestion : q)));
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        navigate('/'); // Перенаправить на главную страницу после закрытия модального окна
     };
 
     return (
@@ -91,7 +96,6 @@ const CreateFormPage = () => {
                 {questions.map((question, index) => {
                     return (
                         <div key={question.id} className="question-item">
-                            {/* Рендерим соответствующий компонент вопроса */}
                             {(() => {
                                 switch (question.type) {
                                     case 'single_choice':
@@ -106,7 +110,6 @@ const CreateFormPage = () => {
                                         return null;
                                 }
                             })()}
-                            {/* Кнопка удаления вопроса */}
                             <Button variant="danger" onClick={() => handleDeleteQuestion(question.id)} className="delete-question">
                                 &times;
                             </Button>
@@ -121,11 +124,20 @@ const CreateFormPage = () => {
             <Button onClick={() => handleAddQuestion('short_text')}>{t('short_answer')}</Button>
             <Button onClick={() => handleAddQuestion('long_text')}>{t('long_answer')}</Button>
 
-            <Button onClick={() => {
-                console.log('Save button clicked');
-                handleSaveForm();
-            }}>{t('save_form')}</Button>
+            <Button onClick={handleSaveForm}>{t('save_form')}</Button>
 
+            {/* Модальное окно */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t('success')}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{t('form_created_successfully')}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleCloseModal}>
+                        {t('close')}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

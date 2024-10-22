@@ -103,13 +103,13 @@ const Profile = ({ username }) => {
             {selectedForm && (
                 <Modal show={showModal} onHide={handleCloseModal}>
                     <Modal.Header closeButton>
-                        <Modal.Title>{selectedForm.name}</Modal.Title>
+                        <Modal.Title>{t('Name')}: {selectedForm.name}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p>{selectedForm.description}</p>
+                        <p>{t('Description')}: {selectedForm.description}</p>
                         {questions.length > 0 ? (
                             <div>
-                                <h4>{t('Questions')}</h4>
+                                <h4>{t('Questions')}:</h4>
                                 <ul>
                                     {questions.map((question) => (
                                         <li key={question.id}>{question.text}</li>

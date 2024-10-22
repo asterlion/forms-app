@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         }
     }, {
-        timestamps: true // Включает автоматические поля createdAt и updatedAt
+        timestamps: true
     });
 
     Template.associate = function(models) {

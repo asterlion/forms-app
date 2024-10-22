@@ -175,11 +175,9 @@ app.get('/api/forms', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/api/questions/${formId}', authenticateToken, async (req, res) => {
-
+app.get('/api/forms/all', async (req, res) => {
     try {
         const forms = await Template.findAll({
-            where: { userId }
         });
         res.json(forms);
     } catch (error) {
@@ -187,4 +185,67 @@ app.get('/api/questions/${formId}', authenticateToken, async (req, res) => {
         res.status(500).send({ message: 'Server error' });
     }
 });
+
+
+app.get('/api/questions/:formId', authenticateToken, async (req, res) => {
+    const { formId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const formWithQuestions = await Template.findOne({
+            where: {
+                id: formId,
+                userId: userId,
+            },
+            include: [{
+                model: Question,
+                as: 'questions',
+                through: {
+                    attributes: ['question_order'],
+                }
+            }]
+        });
+
+        if (!formWithQuestions) {
+            return res.status(404).json({ message: 'Form not found or you do not have access' });
+        }
+
+        res.json(formWithQuestions.questions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+    }
+});
+
+app.get('/api/questions/all/:formId', async (req, res) => {
+    const { formId } = req.params;
+
+    try {
+        const formWithQuestions = await Template.findOne({
+            where: {
+                id: formId,
+            },
+            include: [{
+                model: Question,
+                as: 'questions',
+                through: {
+                    attributes: ['question_order'],
+                }
+            }]
+        });
+
+        if (!formWithQuestions) {
+            return res.status(404).json({ message: 'Form not found' });
+        }
+
+        res.json(formWithQuestions.questions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
+    }
+});
+
+
+
+
 

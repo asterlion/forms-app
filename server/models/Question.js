@@ -5,19 +5,18 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         type: {
-            type: DataTypes.STRING, // Тип вопроса (например: 'text', 'radio', 'checkbox')
+            type: DataTypes.STRING,
             allowNull: false
         },
         options: {
-            type: DataTypes.JSON, // Для хранения вариантов ответа (если применимо)
+            type: DataTypes.JSON,
             allowNull: true
         }
     }, {
-        timestamps: true // Включает автоматические поля createdAt и updatedAt
+        timestamps: true
     });
 
     Question.associate = function(models) {
-        // Связь с шаблонами через таблицу TemplateQuestions
         Question.belongsToMany(models.Template, { through: models.TemplateQuestions, foreignKey: 'questionId', as: 'templates' });
     };
 
