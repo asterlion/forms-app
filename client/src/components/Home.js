@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
+import {Modal, Button} from 'react-bootstrap';
 import API_URL from '../config';
 import './style/Home.css';
 
-const Home = ({ isAuthenticated }) => {
-    const { t } = useTranslation();
+const Home = ({isAuthenticated}) => {
+    const {t} = useTranslation();
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [selectedForm, setSelectedForm] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -57,7 +57,7 @@ const Home = ({ isAuthenticated }) => {
     }, [t]);
 
     const handleCreateNewForm = () => {
-        setSelectedTemplate({ title: t('Create_New_Form'), description: t('Start_from_scratch') });
+        setSelectedTemplate({title: t('Create_New_Form'), description: t('Start_from_scratch')});
         setSelectedForm(null);
         setShowModal(true);
     };
@@ -84,11 +84,26 @@ const Home = ({ isAuthenticated }) => {
         setQuestions([]);
     };
 
-    const handleCopyToCreateForm = (formId) => {
-        navigate(`/edit-form/${formId}`);
+    //еще поработаем над этой функцией
+    const handleCopyToCreateForm = async (formId) => {
+        try {
+            const response = await fetch(`${API_URL}/api/forms/copy/${formId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при копировании формы');
+            }
+            navigate('/create-form');
+        } catch (error) {
+            console.error('Ошибка:', error.message);
+        }
     };
 
-    // Фильтрация форм по названию
     const filteredForms = forms.filter((form) =>
         form.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -156,8 +171,8 @@ const Home = ({ isAuthenticated }) => {
                                 {t('Create_The_Same_Form')}
                             </button>
                         ) : (
-                            <Button variant="primary" onClick={handleCopyTemplate}>
-                                {t('Create')}
+                            <Button variant="primary" onClick={isAuthenticated ? handleCopyTemplate : () => navigate('/login')}>
+                                {isAuthenticated ? t('Create') : t('Login_to_create')}
                             </Button>
                         )}
                         <Button variant="secondary" onClick={handleCloseModal}>

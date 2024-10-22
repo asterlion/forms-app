@@ -244,6 +244,32 @@ app.get('/api/questions/all/:formId', async (req, res) => {
         res.status(500).send({ message: 'Server error' });
     }
 });
+//этот запрос требует доработки:
+app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
+    const { formId } = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const existingForm = await Template.findOne({ where: { id: formId } });
+
+        if (!existingForm) {
+            return res.status(404).json({ message: 'Форма не найдена' });
+        }
+
+        const newForm = await Template.create({
+            name: existingForm.name,
+            description: existingForm.description,
+            userId: userId,
+            // добавить другие поля, которые необходимо скопировать
+        });
+
+        res.status(201).json(newForm);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Ошибка сервера' });
+    }
+});
+
 
 
 
