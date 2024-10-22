@@ -90,3 +90,11 @@
 .search-input {
     margin: 1rem;
 }
+
+.main-text {
+    color: #0d6efd;
+}
+
+.dark-theme .main-text {
+    color: yellow;
+}

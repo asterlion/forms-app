@@ -109,7 +109,7 @@ const Home = ({ isAuthenticated }) => {
 
             <div className="template-list">
                 <div className="template-card" onClick={handleCreateNewForm}>
-                    <h3>{t('CreateNewForm')}</h3>
+                    <h3 className="main-text">{t('CreateNewForm')}</h3>
                 </div>
 
                 {filteredForms.map((form) => (

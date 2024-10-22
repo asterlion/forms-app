@@ -111,7 +111,7 @@ const Sidebar = ({ isAuthenticated, username, onLogout }) => {
                 </button>
 
                 <button onClick={toggleTheme} className="btn btn-secondary mt-3">
-                    {t('SwitchTo')} {theme === 'light-theme' ? 'dark' : 'light'}
+                    {t('SwitchTo')} {theme === 'light-theme' ? '' : ''}
                 </button>
             </div>
         </div>
