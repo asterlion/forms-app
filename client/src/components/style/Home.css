@@ -86,3 +86,7 @@
 .dark-theme .form-control::placeholder {
     color: #a9a9a9;
 }
+
+.search-input {
+    margin: 1rem;
+}

@@ -70,6 +70,7 @@ i18n
                     fetch_forms_error: 'Ошибка получения форм',
                     Create: 'Создать',
                     Create_The_Same_Form: 'Создать на основе шаблона',
+                    Search_by_name: 'Поиск по названию',
                 },
             },
             en: {
@@ -134,6 +135,7 @@ i18n
                     fetch_forms_error: 'fetch forms error',
                     Create: 'Create',
                     Create_The_Same_Form: 'Create the same form',
+                    Search_by_name: 'Search by name',
                 },
             },
         },

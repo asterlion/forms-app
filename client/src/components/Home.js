@@ -1,19 +1,19 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {useNavigate} from 'react-router-dom';
-import {Modal, Button} from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import API_URL from '../config';
 import './style/Home.css';
 
-const Home = ({isAuthenticated}) => {
-    const {t} = useTranslation();
+const Home = ({ isAuthenticated }) => {
+    const { t } = useTranslation();
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [selectedForm, setSelectedForm] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [formName] = useState('');
     const [forms, setForms] = useState([]);
     const [questions, setQuestions] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
     const fetchForms = useCallback(async () => {
@@ -57,7 +57,7 @@ const Home = ({isAuthenticated}) => {
     }, [t]);
 
     const handleCreateNewForm = () => {
-        setSelectedTemplate({title: t('Create_New_Form'), description: t('Start_from_scratch')});
+        setSelectedTemplate({ title: t('Create_New_Form'), description: t('Start_from_scratch') });
         setSelectedForm(null);
         setShowModal(true);
     };
@@ -72,7 +72,7 @@ const Home = ({isAuthenticated}) => {
         if (!isAuthenticated) {
             navigate('/login');
         } else {
-            console.log('Template copied or new form created:', formName || selectedTemplate.title);
+            console.log('Template copied or new form created:', selectedTemplate.title);
             setShowModal(false);
             navigate('/create-form');
         }
@@ -88,17 +88,31 @@ const Home = ({isAuthenticated}) => {
         navigate(`/edit-form/${formId}`);
     };
 
+    // Фильтрация форм по названию
+    const filteredForms = forms.filter((form) =>
+        form.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="home-page">
             <h2>{t('SelectaSurveyTemplateorCreateaNewOne')}</h2>
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+
+            {/* Поле для поиска */}
+            <input
+                type="text"
+                placeholder={t('Search_by_name')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-control search-input"
+            />
 
             <div className="template-list">
                 <div className="template-card" onClick={handleCreateNewForm}>
                     <h3>{t('CreateNewForm')}</h3>
                 </div>
 
-                {forms.map((form) => (
+                {filteredForms.map((form) => (
                     <div key={form.id} className="template-card" onClick={() => handleFormClick(form)}>
                         <h3>{form.name}</h3>
                         <p>{form.description}</p>
