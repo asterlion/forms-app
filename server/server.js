@@ -122,14 +122,14 @@ app.post('/api/forms', authenticateToken, async (req, res) => {
     console.log('Received form data:', req.body);
     console.log('User ID from token:', req.user.userId);
 
-    const { name, description, questions } = req.body;
+    const {name, description, questions} = req.body;
 
     if (!req.user.userId) {
-        return res.status(400).send({ message: 'User ID is required' });
+        return res.status(400).send({message: 'User ID is required'});
     }
 
     // Создаем запись формы в базе данных
-    const form = await Template.create({ name, description, userId: req.user.userId });
+    const form = await Template.create({name, description, userId: req.user.userId});
 
     // Проходим по каждому вопросу и сохраняем его
     for (let index = 0; index < questions.length; index++) {
@@ -158,7 +158,7 @@ app.post('/api/forms', authenticateToken, async (req, res) => {
         });
     }
 
-    res.status(201).send({ message: 'Form created successfully' });
+    res.status(201).send({message: 'Form created successfully'});
 });
 
 app.get('/api/forms', authenticateToken, async (req, res) => {
@@ -166,29 +166,60 @@ app.get('/api/forms', authenticateToken, async (req, res) => {
 
     try {
         const forms = await Template.findAll({
-            where: { userId }
+            where: {userId}
         });
         res.json(forms);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).send({message: 'Server error'});
     }
 });
 
+app.get('/api/edit-form/:formId', authenticateToken, async (req, res) => {
+    const {formId} = req.params;
+    const userId = req.user.userId;
+
+    try {
+        const formWithQuestions = await Template.findOne({
+            where: {
+                id: formId,
+                userId: userId,
+            },
+            include: [{
+                model: Question,
+                as: 'questions',
+                through: {
+                    attributes: ['question_order'],
+                }
+            }]
+        });
+
+        console.log('Retrieved form with questions:', formWithQuestions);
+        if (!formWithQuestions) {
+            return res.status(404).json({message: 'Форма не найдена'});
+        }
+
+        res.json(formWithQuestions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({message: 'Server error'});
+    }
+});
+
+
 app.get('/api/forms/all', async (req, res) => {
     try {
-        const forms = await Template.findAll({
-        });
+        const forms = await Template.findAll({});
         res.json(forms);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).send({message: 'Server error'});
     }
 });
 
 
 app.get('/api/questions/:formId', authenticateToken, async (req, res) => {
-    const { formId } = req.params;
+    const {formId} = req.params;
     const userId = req.user.userId;
 
     try {
@@ -207,18 +238,18 @@ app.get('/api/questions/:formId', authenticateToken, async (req, res) => {
         });
 
         if (!formWithQuestions) {
-            return res.status(404).json({ message: 'Form not found or you do not have access' });
+            return res.status(404).json({message: 'Form not found or you do not have access'});
         }
 
         res.json(formWithQuestions.questions);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).send({message: 'Server error'});
     }
 });
 
 app.get('/api/questions/all/:formId', async (req, res) => {
-    const { formId } = req.params;
+    const {formId} = req.params;
 
     try {
         const formWithQuestions = await Template.findOne({
@@ -235,25 +266,25 @@ app.get('/api/questions/all/:formId', async (req, res) => {
         });
 
         if (!formWithQuestions) {
-            return res.status(404).json({ message: 'Form not found' });
+            return res.status(404).json({message: 'Form not found'});
         }
 
         res.json(formWithQuestions.questions);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
+        res.status(500).send({message: 'Server error'});
     }
 });
 //этот запрос требует доработки:
 app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
-    const { formId } = req.params;
+    const {formId} = req.params;
     const userId = req.user.userId;
 
     try {
-        const existingForm = await Template.findOne({ where: { id: formId } });
+        const existingForm = await Template.findOne({where: {id: formId}});
 
         if (!existingForm) {
-            return res.status(404).json({ message: 'Форма не найдена' });
+            return res.status(404).json({message: 'Форма не найдена'});
         }
 
         const newForm = await Template.create({
@@ -266,7 +297,7 @@ app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
         res.status(201).json(newForm);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(500).send({message: 'Ошибка сервера'});
     }
 });
 

@@ -1,6 +1,6 @@
 import './App.css';
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, {useState} from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Home from './components/Home';
 import Register from './components/Register';
@@ -8,6 +8,7 @@ import Login from './components/Login';
 import Profile from './components/Profile';
 import CreateFormPage from './components/CreateFormPage';
 import PrivateRoute from './components/PrivateRoute';
+import EditForm from './components/EditForm';
 import './i18n';
 
 function App() {
@@ -28,15 +29,16 @@ function App() {
     return (
         <Router>
             <div className="d-flex">
-                <Sidebar isAuthenticated={isAuthenticated} username={username} onLogout={handleLogout} />
+                <Sidebar isAuthenticated={isAuthenticated} username={username} onLogout={handleLogout}/>
                 <div className="flex-grow-1 p-3">
                     <Routes>
-                        <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
-                        <Route path="/profile" element={<Profile username={username} />} />
-                        <Route path="/register" element={<Register onLogin={handleLogin} />} />
-                        <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
-                            <Route path="/create-form" element={<CreateFormPage />} />
+                        <Route path="/" element={<Home isAuthenticated={isAuthenticated}/>}/>
+                        <Route path="/profile" element={<Profile username={username}/>}/>
+                        <Route path="/register" element={<Register onLogin={handleLogin}/>}/>
+                        <Route path="/login" element={<Login onLogin={handleLogin}/>}/>
+                        <Route element={<PrivateRoute isAuthenticated={isAuthenticated}/>}>
+                            <Route path="/create-form" element={<CreateFormPage/>}/>
+                            <Route path="/edit-form/:formId" element={<EditForm />} />
                         </Route>
                     </Routes>
                 </div>
