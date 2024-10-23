@@ -29,12 +29,18 @@ const Profile = ({ username }) => {
             }
 
             const data = await response.json();
+
+            if (data.length === 0) {
+                console.log(t('No_forms_available_for_the_user'));
+            }
+
             setForms(data);
         } catch (error) {
             console.error('Error fetching forms:', error.message);
             setErrorMessage(error.message);
         }
     }, [token, t]);
+
 
     const fetchQuestions = useCallback(async (formId) => {
         try {

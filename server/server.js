@@ -69,7 +69,7 @@ app.post('/api/register', async (req, res) => {
             username: username,
             email: email,
             password_hash: hashedPassword,
-            status: 'active' // Сохраняем хэшированный пароль
+            status: 'active'
         });
 
         // Назначаем пользователю роль "user"
@@ -80,7 +80,7 @@ app.post('/api/register', async (req, res) => {
         const token = jwt.sign({username: newUser.username}, secretKey, {expiresIn: '1h'});
 
         // Возвращаем успешный ответ с токеном и именем пользователя
-        res.status(201).json({success: true, token, userName: newUser.username});
+        res.status(201).json({success: true, token, username: newUser.username});
     } catch (error) {
         console.error('Ошибка при регистрации:', error);
         res.status(500).json({error: 'Ошибка сервера при регистрации.'});
@@ -168,6 +168,9 @@ app.get('/api/forms', authenticateToken, async (req, res) => {
         const forms = await Template.findAll({
             where: {userId}
         });
+        if (!forms || forms.length === 0) {
+            return res.json([]);
+        }
         res.json(forms);
     } catch (error) {
         console.error(error);

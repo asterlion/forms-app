@@ -45,12 +45,11 @@ const Register = ({ onLogin }) => {
             console.log("Ответ от сервера:", data);
 
             if (response.ok && data.success) {
-                // Успешная регистрация
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('username', data.username);
                 setShowSuccessModal(true);
                 setTimeout(() => {
-                    onLogin(data.username);  // Используем имя пользователя от сервера
+                    onLogin(data.username);
                     navigate('/profile');
                 }, 2000);
             } else {

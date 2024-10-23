@@ -74,6 +74,7 @@ i18n
                     Edit_Form: 'Редактировать форму',
                     Save_Edit: 'Сохранить изменения',
                     Loading: 'Загрузка...',
+                    No_forms_available_for_the_user: 'Нет форм созданных вами',
                 },
             },
             en: {
@@ -142,6 +143,7 @@ i18n
                     Edit_Form: 'Edit form',
                     Save_Edit: 'Save edit',
                     Loading: 'Loading...',
+                    No_forms_available_for_the_user: 'No forms available for the user',
                 },
             },
         },
