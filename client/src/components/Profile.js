@@ -97,14 +97,21 @@ const Profile = ({ username }) => {
 
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
-            <div className="template-list">
-                {forms.map((form) => (
-                    <div key={form.id} className="template-card" onClick={() => handleFormClick(form)}>
-                        <h3>{form.name}</h3>
-                        <p>{form.description}</p>
-                    </div>
-                ))}
-            </div>
+            {forms.length === 0 ? (
+                <div className="no-forms-message">
+                    <p>{t('No_forms_available_for_the_user')}</p>
+                    <a href="/create-form" className="btn btn-primary">{t('Create_your_first_form')}</a>
+                </div>
+            ) : (
+                <div className="template-list">
+                    {forms.map((form) => (
+                        <div key={form.id} className="template-card" onClick={() => handleFormClick(form)}>
+                            <h3>{form.name}</h3>
+                            <p>{form.description}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {selectedForm && (
                 <Modal show={showModal} onHide={handleCloseModal}>

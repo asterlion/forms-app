@@ -75,6 +75,7 @@ i18n
                     Save_Edit: 'Сохранить изменения',
                     Loading: 'Загрузка...',
                     No_forms_available_for_the_user: 'Нет форм созданных вами',
+                    Create_your_first_form: 'Создайте свою первую форму',
                 },
             },
             en: {
@@ -144,6 +145,7 @@ i18n
                     Save_Edit: 'Save edit',
                     Loading: 'Loading...',
                     No_forms_available_for_the_user: 'No forms available for the user',
+                    Create_your_first_form: 'Create your first form',
                 },
             },
         },
