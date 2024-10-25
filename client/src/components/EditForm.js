@@ -13,6 +13,8 @@ const EditForm = () => {
     const [questions, setQuestions] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const token = localStorage.getItem('token');
 
     const fetchFormData = useCallback(async () => {
@@ -77,7 +79,12 @@ const EditForm = () => {
                 throw new Error('Не удалось обновить форму');
             }
 
-            navigate('/profile');
+            setSuccessMessage(t('success'));
+            setIsModalOpen(true);
+            setTimeout(() => {
+                navigate('/profile');
+            }, 2000);
+
         } catch (error) {
             console.error('Ошибка редактирования формы:', error.message);
             setErrorMessage(error.message);
@@ -93,6 +100,10 @@ const EditForm = () => {
     const handleRemoveQuestion = (index) => {
         const newQuestions = questions.filter((_, i) => i !== index);
         setQuestions(newQuestions);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
     };
 
     if (!form) {
@@ -139,6 +150,18 @@ const EditForm = () => {
                 ))}
                 <button type="submit" className="btn btn-primary">{t('Save_Edit')}</button>
             </form>
+
+            {isModalOpen && (
+                <>
+                    <div className="modal-overlay-1" onClick={closeModal}></div>
+                    <div className="modal-1">
+                        <div className="modal-content-1">
+                            <span className="close-1" onClick={closeModal}>&times;</span>
+                            <p>{successMessage}</p>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };
