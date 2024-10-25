@@ -39,7 +39,7 @@ const authenticateToken = (req, res, next) => {
     if (!token) return res.sendStatus(401);
 
     jwt.verify(token, secretKey, (err, user) => {
-        if (err) return res.sendStatus(403); //
+        if (err) return res.sendStatus(403);
         req.user = user;
         next();
     });
@@ -209,6 +209,57 @@ app.get('/api/edit-form/:formId', authenticateToken, async (req, res) => {
     }
 });
 
+app.put('/api/edit-form/:formId', authenticateToken, async (req, res) => {
+    const { formId } = req.params;
+    const { name, description, questions } = req.body;
+    const userId = req.user.userId;
+
+    try {
+        const form = await Template.findOne({
+            where: { id: formId, userId }
+        });
+
+        if (!form) {
+            return res.status(404).json({ message: 'Форма не найдена' });
+        }
+
+        form.name = name;
+        form.description = description;
+        await form.save();
+
+        await TemplateQuestions.destroy({ where: { templateId: formId } });
+
+        for (let index = 0; index < questions.length; index++) {
+            const question = questions[index];
+
+            const updatedQuestion = await Question.create({
+                text: question.text,
+                type: question.type,
+            });
+
+            if (question.options && question.options.length) {
+                for (let option of question.options) {
+                    await Option.create({
+                        text: option,
+                        questionId: updatedQuestion.id,
+                    });
+                }
+            }
+
+            await TemplateQuestions.create({
+                question_order: index + 1,
+                questionId: updatedQuestion.id,
+                templateId: formId,
+            });
+        }
+
+        res.status(200).json({ message: 'Форма успешно обновлена' });
+    } catch (error) {
+        console.error('Ошибка на сервере при обновлении формы:', error);
+        res.status(500).send({ message: 'Ошибка сервера' });
+    }
+});
+
 
 app.get('/api/forms/all', async (req, res) => {
     try {
@@ -284,23 +335,56 @@ app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
 
     try {
-        const existingForm = await Template.findOne({where: {id: formId}});
+        // Найти оригинальную форму
+        const existingForm = await Template.findOne({
+            where: {id: formId},
+            include: [{
+                model: Question,
+                as: 'questions',
+                include: [{
+                    model: Option,
+                    as: 'options'
+                }]
+            }]
+        });
 
         if (!existingForm) {
             return res.status(404).json({message: 'Форма не найдена'});
         }
 
+        // Создать новую форму с тем же именем и описанием
         const newForm = await Template.create({
-            name: existingForm.name,
+            name: existingForm.name + ' (Copy)', // Можно добавить "копия" в название
             description: existingForm.description,
             userId: userId,
-            // добавить другие поля, которые необходимо скопировать
         });
 
-        res.status(201).json(newForm);
+        // Копировать все вопросы и опции
+        for (let question of existingForm.questions) {
+            const newQuestion = await Question.create({
+                text: question.text,
+                type: question.type,
+            });
+
+            for (let option of question.options) {
+                await Option.create({
+                    text: option.text,
+                    questionId: newQuestion.id,
+                });
+            }
+
+            // Создать запись в таблице связей (TemplateQuestions)
+            await TemplateQuestions.create({
+                question_order: question.TemplateQuestions.question_order,
+                questionId: newQuestion.id,
+                templateId: newForm.id, // Привязать к новой форме
+            });
+        }
+
+        res.status(201).json({message: 'Форма успешно скопирована', form: newForm});
     } catch (error) {
         console.error(error);
-        res.status(500).send({message: 'Ошибка сервера'});
+        res.status(500).send({message: 'Ошибка сервера при копировании формы'});
     }
 });
 

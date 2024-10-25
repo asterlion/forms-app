@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API_URL from '../config';
 import './style/EditForm.css';
@@ -13,11 +13,10 @@ const EditForm = () => {
     const [questions, setQuestions] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
-    const fetchFormData = async () => {
+    const fetchFormData = useCallback(async () => {
         console.log('Form ID:', formId);
-
-        const token = localStorage.getItem('token');
 
         if (!token) {
             console.error('Токен отсутствует, перенаправляем на страницу логина');
@@ -52,11 +51,11 @@ const EditForm = () => {
             console.error('Ошибка загрузки формы:', error.message);
             setErrorMessage(error.message);
         }
-    };
+    }, [formId, navigate, token]);
 
     useEffect(() => {
         fetchFormData();
-    }, [formId]);
+    }, [fetchFormData]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -65,6 +64,7 @@ const EditForm = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     name: title,
@@ -88,11 +88,6 @@ const EditForm = () => {
         const newQuestions = [...questions];
         newQuestions[index].text = event.target.value;
         setQuestions(newQuestions);
-    };
-
-    const handleAddQuestion = () => {
-        const newQuestion = { id: Date.now(), text: '' };
-        setQuestions([...questions, newQuestion]);
     };
 
     const handleRemoveQuestion = (index) => {
@@ -130,7 +125,7 @@ const EditForm = () => {
                     />
                 </div>
 
-                <h3>{t('Questions')}</h3>
+                <label htmlFor="formQuestions">{t('Questions')}:</label>
                 {questions.map((question, index) => (
                     <div key={question.id} className="form-group">
                         <input
@@ -139,11 +134,9 @@ const EditForm = () => {
                             onChange={(e) => handleQuestionChange(index, e)}
                             required
                         />
-                        <button type="button" onClick={() => handleRemoveQuestion(index)}>Удалить</button>
+                        <button type="button" onClick={() => handleRemoveQuestion(index)}>{t('Delete')}</button>
                     </div>
                 ))}
-                <button type="button" onClick={handleAddQuestion}>Добавить вопрос</button>
-
                 <button type="submit" className="btn btn-primary">{t('Save_Edit')}</button>
             </form>
         </div>
