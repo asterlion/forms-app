@@ -26,6 +26,12 @@ function App() {
         localStorage.removeItem('token');
     };
 
+    const handleDeleteProfile = () => {
+        setUsername('');
+        localStorage.removeItem('username');
+        localStorage.removeItem('token');
+    };
+
     return (
         <Router>
             <div className="d-flex">
@@ -33,12 +39,13 @@ function App() {
                 <div className="flex-grow-1 p-3">
                     <Routes>
                         <Route path="/" element={<Home isAuthenticated={isAuthenticated}/>}/>
-                        <Route path="/profile" element={<Profile username={username}/>}/>
+                        <Route path="/profile"
+                               element={<Profile username={username} onDeleteProfile={handleDeleteProfile}/>}/>
                         <Route path="/register" element={<Register onLogin={handleLogin}/>}/>
                         <Route path="/login" element={<Login onLogin={handleLogin}/>}/>
                         <Route element={<PrivateRoute isAuthenticated={isAuthenticated}/>}>
                             <Route path="/create-form" element={<CreateFormPage/>}/>
-                            <Route path="/edit-form/:formId" element={<EditForm />} />
+                            <Route path="/edit-form/:formId" element={<EditForm/>}/>
                         </Route>
                     </Routes>
                 </div>

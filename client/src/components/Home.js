@@ -167,13 +167,15 @@ const Home = ({isAuthenticated}) => {
                     </Modal.Body>
                     <Modal.Footer>
                         {selectedForm ? (
-                            <button onClick={() => handleCopyToCreateForm(selectedForm.id)} className="btn btn-primary">
-                                {t('Create_The_Same_Form')}
+                            <button className="btn btn-primary"
+                                    onClick={isAuthenticated ? handleCopyToCreateForm(selectedForm.id) : () => navigate('/login')}>
+                                {isAuthenticated ? t('Create_The_Same_Form') : t('Login_to_create')}
                             </button>
                         ) : (
-                            <Button variant="primary" onClick={isAuthenticated ? handleCopyTemplate : () => navigate('/login')}>
+                            <button className="btn btn-primary"
+                                    onClick={isAuthenticated ? handleCopyTemplate : () => navigate('/login')}>
                                 {isAuthenticated ? t('Create') : t('Login_to_create')}
-                            </Button>
+                            </button>
                         )}
                         <Button variant="secondary" onClick={handleCloseModal}>
                             {t('Close')}

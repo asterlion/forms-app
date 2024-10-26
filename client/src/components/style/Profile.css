@@ -1,4 +1,8 @@
-/* Адаптация профиля для мобильных устройств */
+.btn-outline-danger {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
 @media (max-width: 768px) {
     .profile-page {
         display: flex;
@@ -39,3 +43,4 @@
         margin: 0 auto;
     }
 }
+

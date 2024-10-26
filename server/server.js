@@ -388,6 +388,27 @@ app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
     }
 });
 
+app.delete('/api/delete-profile', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    console.log('userId', userId);
+
+    try {
+        const deleted = await User.destroy({
+            where: { id: userId }
+        });
+
+        if (deleted) {
+            return res.status(200).json({ message: 'Профиль успешно удален' });
+        } else {
+            return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+    } catch (error) {
+        console.error('Ошибка удаления профиля:', error);
+        return res.status(500).json({ message: 'Не удалось удалить профиль' });
+    }
+});
+
+
 
 
 
