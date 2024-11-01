@@ -35,7 +35,7 @@ const SingleChoiceQuestion = ({ question, onUpdate }) => {
             </Form.Group>
             {options.map((option, index) => (
                 <Form.Group key={index}>
-                    <Form.Label>Option {index + 1}</Form.Label>
+                    <Form.Label>{t('Option')} {index + 1}</Form.Label>
                     <Form.Control
                         type="text"
                         value={option}

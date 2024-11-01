@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Question.associate = function(models) {
         Question.belongsToMany(models.Template, { through: models.TemplateQuestions, foreignKey: 'questionId', as: 'templates' });
+        Question.hasMany(models.Option, { foreignKey: 'questionId', as: 'answerOptions' });
     };
 
     return Question;

@@ -40,6 +40,7 @@ const CreateFormPage = () => {
         };
         const token = localStorage.getItem('token');
         console.log('Form data to be saved:', formData);
+        console.log('token:', token);
 
         fetch(`${API_URL}/api/forms`, {
             method: 'POST',
@@ -120,7 +121,7 @@ const CreateFormPage = () => {
             <p>{t('add_question')}</p>
 
             <Button onClick={() => handleAddQuestion('single_choice')}>{t('single_choice')}</Button>
-            <Button onClick={() => handleAddQuestion('multiple_choice')}>{t('multiple_choice')}</Button>
+            {/*<Button onClick={() => handleAddQuestion('multiple_choice')}>{t('multiple_choice')}</Button>*/}
             <Button onClick={() => handleAddQuestion('short_text')}>{t('short_answer')}</Button>
             <Button onClick={() => handleAddQuestion('long_text')}>{t('long_answer')}</Button>
 

@@ -15,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         question_order: {
-            type: DataTypes.INTEGER, // Поле для указания порядка вопросов
+            type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
-        timestamps: false // отключение автоматических полей
+        timestamps: false
     });
 
     TemplateQuestions.associate = function(models) {

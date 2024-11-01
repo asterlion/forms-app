@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { createSalesforceAccount } from './salesforceIntegration';
 import API_URL from '../config';
 import './style/Profile.css';
 import { Modal, Button } from 'react-bootstrap';
@@ -39,6 +40,25 @@ const Profile = ({ username, onDeleteProfile }) => {
         }
     }, [token, t]);
 
+    const fetchUserData = async () => {
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`${API_URL}/api/user`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Ошибка при получении данных пользователя");
+        }
+
+        const userData = await response.json();
+        console.log("Данные пользователя:", userData);
+        return userData;
+    };
+
     const fetchQuestions = useCallback(async (formId) => {
         try {
             const response = await fetch(`${API_URL}/api/questions/${formId}`, {
@@ -68,6 +88,22 @@ const Profile = ({ username, onDeleteProfile }) => {
         }
     }, [navigate, fetchForms]);
 
+    const handleSalesforceIntegration = async () => {
+        try {
+            const userData = await fetchUserData();
+            const username = userData.username;
+            const email = userData.email;
+
+            if (!username || !email) {
+                console.error("Имя пользователя или электронная почта отсутствуют.");
+                return;
+            }
+
+            await createSalesforceAccount(username, email);
+        } catch (error) {
+            console.error("Ошибка интеграции с Salesforce:", error);
+        }
+    };
     const handleFormClick = async (form) => {
         setSelectedForm(form);
         await fetchQuestions(form.id);
@@ -129,6 +165,10 @@ const Profile = ({ username, onDeleteProfile }) => {
                     ))}
                 </div>
             )}
+
+            <button onClick={handleSalesforceIntegration} className="btn btn-outline-primary">
+                {t('Integrate_with_Salesforce')}
+            </button>
 
             <button onClick={handleDeleteProfile} className="btn btn-outline-danger">
                 {t('Delete_Profile')}

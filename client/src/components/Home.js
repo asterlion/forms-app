@@ -15,6 +15,7 @@ const Home = ({isAuthenticated}) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     const fetchForms = useCallback(async () => {
         try {
@@ -84,21 +85,23 @@ const Home = ({isAuthenticated}) => {
         setQuestions([]);
     };
 
-    //еще поработаем над этой функцией
     const handleCopyToCreateForm = async (formId) => {
         try {
-            const response = await fetch(`${API_URL}/api/forms/copy/${formId}`, {
+            const response = await fetch(`${API_URL}/api/copy-form/${formId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
             if (!response.ok) {
                 throw new Error('Ошибка при копировании формы');
             }
-            navigate('/create-form');
+
+            const newForm = await response.json();
+            console.log('new form id', newForm.id)
+            navigate(`/edit-form/${newForm.id}`);
         } catch (error) {
             console.error('Ошибка:', error.message);
         }
@@ -168,12 +171,28 @@ const Home = ({isAuthenticated}) => {
                     <Modal.Footer>
                         {selectedForm ? (
                             <button className="btn btn-primary"
-                                    onClick={isAuthenticated ? handleCopyToCreateForm(selectedForm.id) : () => navigate('/login')}>
+                                    onClick={async () => {
+                                        if (isAuthenticated) {
+                                            try {
+                                                await handleCopyToCreateForm(selectedForm.id);
+                                            } catch (error) {
+                                                console.error('Ошибка при копировании формы:', error);
+                                            }
+                                        } else {
+                                            navigate('/login');
+                                        }
+                                    }}>
                                 {isAuthenticated ? t('Create_The_Same_Form') : t('Login_to_create')}
                             </button>
                         ) : (
                             <button className="btn btn-primary"
-                                    onClick={isAuthenticated ? handleCopyTemplate : () => navigate('/login')}>
+                                    onClick={() => {
+                                        if (isAuthenticated) {
+                                            handleCopyTemplate();
+                                        } else {
+                                            navigate('/login');
+                                        }
+                                    }}>
                                 {isAuthenticated ? t('Create') : t('Login_to_create')}
                             </button>
                         )}

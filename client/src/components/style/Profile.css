@@ -3,6 +3,11 @@
     margin-bottom: 1rem;
 }
 
+.btn-outline-primary {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
 @media (max-width: 768px) {
     .profile-page {
         display: flex;

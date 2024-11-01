@@ -3,9 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {User, Role, Question, Template, TemplateQuestions, Option} = require('./models');
 const app = express();
+const axios = require("axios");
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const path = require('path');
 const jwt = require('jsonwebtoken');
 const secretKey = '7554817';
 const port = process.env.PORT || 3000;
@@ -15,7 +15,8 @@ const corsOptions = {
     origin: [
         'http://localhost:3001',
         'http://localhost:3001/',
-        'https://astreiko-itransition.online'
+        'https://astreiko-itransition.online',
+        'https://itransition80-dev-ed.develop.my.salesforce.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -210,24 +211,24 @@ app.get('/api/edit-form/:formId', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/edit-form/:formId', authenticateToken, async (req, res) => {
-    const { formId } = req.params;
-    const { name, description, questions } = req.body;
+    const {formId} = req.params;
+    const {name, description, questions} = req.body;
     const userId = req.user.userId;
 
     try {
         const form = await Template.findOne({
-            where: { id: formId, userId }
+            where: {id: formId, userId}
         });
 
         if (!form) {
-            return res.status(404).json({ message: 'Форма не найдена' });
+            return res.status(404).json({message: 'Форма не найдена'});
         }
 
         form.name = name;
         form.description = description;
         await form.save();
 
-        await TemplateQuestions.destroy({ where: { templateId: formId } });
+        await TemplateQuestions.destroy({where: {templateId: formId}});
 
         for (let index = 0; index < questions.length; index++) {
             const question = questions[index];
@@ -253,10 +254,10 @@ app.put('/api/edit-form/:formId', authenticateToken, async (req, res) => {
             });
         }
 
-        res.status(200).json({ message: 'Форма успешно обновлена' });
+        res.status(200).json({message: 'Форма успешно обновлена'});
     } catch (error) {
         console.error('Ошибка на сервере при обновлении формы:', error);
-        res.status(500).send({ message: 'Ошибка сервера' });
+        res.status(500).send({message: 'Ошибка сервера'});
     }
 });
 
@@ -329,13 +330,13 @@ app.get('/api/questions/all/:formId', async (req, res) => {
         res.status(500).send({message: 'Server error'});
     }
 });
-//этот запрос требует доработки:
-app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
+
+app.post('/api/copy-form/:formId', authenticateToken, async (req, res) => {
     const {formId} = req.params;
     const userId = req.user.userId;
 
     try {
-        // Найти оригинальную форму
+        // Находим исходную форму с ее вопросами и вариантами
         const existingForm = await Template.findOne({
             where: {id: formId},
             include: [{
@@ -343,7 +344,7 @@ app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
                 as: 'questions',
                 include: [{
                     model: Option,
-                    as: 'options'
+                    as: 'answerOptions'
                 }]
             }]
         });
@@ -352,41 +353,129 @@ app.post('/api/forms/copy/:formId', authenticateToken, async (req, res) => {
             return res.status(404).json({message: 'Форма не найдена'});
         }
 
-        // Создать новую форму с тем же именем и описанием
+        // Создаем новую форму с новым `id`, но тем же `name` и `description`
         const newForm = await Template.create({
-            name: existingForm.name + ' (Copy)', // Можно добавить "копия" в название
+            name: `${existingForm.name} - Copy`,
             description: existingForm.description,
-            userId: userId,
+            userId: userId
         });
 
-        // Копировать все вопросы и опции
-        for (let question of existingForm.questions) {
+        // Копируем вопросы и варианты ответов для новой формы
+        for (let index = 0; index < existingForm.questions.length; index++) {
+            const question = existingForm.questions[index];
+
+            // Создаем новый вопрос для новой формы
             const newQuestion = await Question.create({
                 text: question.text,
                 type: question.type,
             });
 
-            for (let option of question.options) {
-                await Option.create({
-                    text: option.text,
-                    questionId: newQuestion.id,
-                });
+            // Копируем варианты ответа, если они существуют
+            if (question.options && question.options.length) {
+                for (let option of question.options) {
+                    await Option.create({
+                        text: option.text,
+                        questionId: newQuestion.id,
+                    });
+                }
             }
 
-            // Создать запись в таблице связей (TemplateQuestions)
+            // Сохраняем связь между новой формой и вопросом с указанием порядка
             await TemplateQuestions.create({
-                question_order: question.TemplateQuestions.question_order,
+                question_order: index + 1, // Указываем порядок вопроса (начиная с 1)
                 questionId: newQuestion.id,
-                templateId: newForm.id, // Привязать к новой форме
+                templateId: newForm.id, // Связываем с новой формой
             });
         }
 
-        res.status(201).json({message: 'Форма успешно скопирована', form: newForm});
+        res.status(201).json({
+            message: 'Форма успешно скопирована',
+            newFormId: newForm.id
+        });
     } catch (error) {
-        console.error(error);
+        console.error('Ошибка при копировании формы:', error);
         res.status(500).send({message: 'Ошибка сервера при копировании формы'});
     }
 });
+
+app.get('/api/user', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    console.log('user id', userId);
+    try {
+        const user = await User.findByPk(userId, {
+            attributes: ['username', 'email']
+        });
+
+        if (!user) {
+            return res.status(404).json({message: 'Пользователь не найден'});
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error('Ошибка получения данных пользователя:', error.message);
+        res.status(500).json({message: 'Ошибка сервера'});
+    }
+});
+
+app.post('/api/salesforce-token', async (req, res) => {
+    try {
+        const response = await axios.post("https://login.salesforce.com/services/oauth2/token",
+            new URLSearchParams({
+                grant_type: "password",
+                client_id: "3MVG9PwZx9R6_UrfWP3VD3jJz0cZKiz4ETbOnBtbiypkB..zpZorn_YiviQP2.pv0Ud1d7Pa2F6zffKXTLXHb",
+                client_secret: "B13ECC1C9968AAEED2E3DE79511528269E5CB930EB3C8CAC3E46835605E18DA5",
+                username: "tam@itramsition.training",
+                password: "maN9TfQnvDzinG01vu5TMhU48pVDTpqR0wuyO"
+            }).toString(),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.error("Ошибка получения токена:", error.response ? error.response.data : error.message);
+        res.status(400).json({ error: "Ошибка при получении токена", details: error.response ? error.response.data : error.message });
+    }
+});
+
+app.post('/api/salesforce/account', async (req, res) => {
+    const { username, email } = req.body;
+
+    try {
+        // Получаем токен
+        const tokenResponse = await axios.post("https://login.salesforce.com/services/oauth2/token",
+            new URLSearchParams({
+                grant_type: "password",
+                client_id: "3MVG9PwZx9R6_UrfWP3VD3jJz0cZKiz4ETbOnBtbiypkB..zpZorn_YiviQP2.pv0Ud1d7Pa2F6zffKXTLXHb",
+                client_secret: "B13ECC1C9968AAEED2E3DE79511528269E5CB930EB3C8CAC3E46835605E18DA5",
+                username: "tam@itramsition.training",
+                password: "maN9TfQnvDzinG01vu5TMhU48pVDTpqR0wuyO"
+            }).toString(),
+            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+        const instanceUrl = tokenResponse.data.instance_url; // Динамически используем URL из ответа
+
+        // Создаем аккаунт в Salesforce
+        const accountResponse = await axios.post(
+            `${instanceUrl}/services/data/v54.0/sobjects/Account`,
+            { Name: username, Email__c: email },
+            { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+        );
+
+        res.status(200).json(accountResponse.data);
+    } catch (error) {
+        console.error("Ошибка интеграции с Salesforce:", error);
+        res.status(500).json({
+            error: "Ошибка при интеграции с Salesforce",
+            details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
 
 app.delete('/api/delete-profile', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
@@ -394,17 +483,17 @@ app.delete('/api/delete-profile', authenticateToken, async (req, res) => {
 
     try {
         const deleted = await User.destroy({
-            where: { id: userId }
+            where: {id: userId}
         });
 
         if (deleted) {
-            return res.status(200).json({ message: 'Профиль успешно удален' });
+            return res.status(200).json({message: 'Профиль успешно удален'});
         } else {
-            return res.status(404).json({ message: 'Пользователь не найден' });
+            return res.status(404).json({message: 'Пользователь не найден'});
         }
     } catch (error) {
         console.error('Ошибка удаления профиля:', error);
-        return res.status(500).json({ message: 'Не удалось удалить профиль' });
+        return res.status(500).json({message: 'Не удалось удалить профиль'});
     }
 });
 

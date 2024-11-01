@@ -1,4 +1,3 @@
-// models/Option.js
 module.exports = (sequelize, DataTypes) => {
     const Option = sequelize.define('Option', {
         text: {

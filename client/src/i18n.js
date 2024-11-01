@@ -80,6 +80,8 @@ i18n
                     Delete_Profile: 'Удалить профиль',
                     Are_you_sure_you_want_to_delete_your_profile: 'Вы уверены, что хотите удалить ваш профиль?',
                     delete_profile_error: 'Ошибка удаления профиля',
+                    Option: 'Вариант ответа',
+                    Integrate_with_Salesforce: 'Интеграция данных с Salesforce' ,
                 },
             },
             en: {
@@ -154,6 +156,8 @@ i18n
                     Delete_Profile: 'Delete profile',
                     Are_you_sure_you_want_to_delete_your_profile: 'Are you sure you want to delete your profile?',
                     delete_profile_error: 'delete profile error',
+                    Option: 'Option',
+                    Integrate_with_Salesforce: 'Integrate with Salesforce',
                 },
             },
         },
