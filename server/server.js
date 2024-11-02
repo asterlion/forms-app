@@ -457,7 +457,7 @@ app.post('/api/salesforce/account', async (req, res) => {
         );
 
         const accessToken = tokenResponse.data.access_token;
-        const instanceUrl = tokenResponse.data.instance_url; // Динамически используем URL из ответа
+        const instanceUrl = tokenResponse.data.instance_url;
 
         // Создаем аккаунт в Salesforce
         const accountResponse = await axios.post(
@@ -475,7 +475,6 @@ app.post('/api/salesforce/account', async (req, res) => {
         });
     }
 });
-
 
 app.delete('/api/delete-profile', authenticateToken, async (req, res) => {
     const userId = req.user.userId;

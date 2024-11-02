@@ -55,7 +55,7 @@ const Profile = ({ username, onDeleteProfile }) => {
         }
 
         const userData = await response.json();
-        console.log("Данные пользователя:", userData);
+        console.log("Данные пользователя:", userData); // Добавьте это для логирования
         return userData;
     };
 
@@ -91,19 +91,32 @@ const Profile = ({ username, onDeleteProfile }) => {
     const handleSalesforceIntegration = async () => {
         try {
             const userData = await fetchUserData();
-            const username = userData.username;
-            const email = userData.email;
+            const { username, email } = userData;
 
             if (!username || !email) {
-                console.error("Имя пользователя или электронная почта отсутствуют.");
+                alert(t("integrationMissingUserData"));
                 return;
             }
 
-            await createSalesforceAccount(username, email);
+            const response = await createSalesforceAccount(username, email);
+
+            if (response.success) {
+                alert(t("integrationAccountCreated"));
+            } else if (response.errors && response.errors.length > 0) {
+                if (response.errors[0].statusCode === 'DUPLICATES_DETECTED') {
+                    alert(t("integrationDuplicateAccount"));
+                } else {
+                    alert(t("integrationCreationError", { message: response.errors[0].message }));
+                }
+            } else {
+                alert(t("integrationUnknownError"));
+            }
         } catch (error) {
             console.error("Ошибка интеграции с Salesforce:", error);
+            alert(t("integrationDuplicateAccount"));
         }
     };
+
     const handleFormClick = async (form) => {
         setSelectedForm(form);
         await fetchQuestions(form.id);

@@ -36,7 +36,10 @@ export const createSalesforceAccount = async (username, email) => {
 
         const data = await response.json();
         console.log("Аккаунт успешно создан в Salesforce", data);
+        return data;
     } catch (error) {
         console.error("Ошибка интеграции с Salesforce:", error.message);
+        throw error;
     }
 };
+

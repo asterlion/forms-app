@@ -1,4 +1,3 @@
-// i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -81,7 +80,13 @@ i18n
                     Are_you_sure_you_want_to_delete_your_profile: 'Вы уверены, что хотите удалить ваш профиль?',
                     delete_profile_error: 'Ошибка удаления профиля',
                     Option: 'Вариант ответа',
-                    Integrate_with_Salesforce: 'Интеграция данных с Salesforce' ,
+                    Integrate_with_Salesforce: 'Интеграция данных с Salesforce',
+                    integrationMissingUserData: 'Имя пользователя или электронная почта отсутствуют.',
+                    integrationAccountCreated: 'Аккаунт успешно создан в Salesforce!',
+                    integrationDuplicateAccount: 'Аккаунт с такими данными уже существует в Salesforce.',
+                    integrationCreationError: 'Ошибка при создании аккаунта в Salesforce',
+                    integrationUnknownError: 'Не удалось создать аккаунт в Salesforce. Пожалуйста, попробуйте позже.',
+                    integrationServerError: 'Произошла ошибка при интеграции с Salesforce. Пожалуйста, попробуйте позже.'
                 },
             },
             en: {
@@ -96,7 +101,7 @@ i18n
                     password: 'Password',
                     username: 'Username',
                     confirmPassword: 'Confirm password',
-                    UserSuccessfullyRegistered: 'User successfully registered !',
+                    UserSuccessfullyRegistered: 'User successfully registered!',
                     Success: 'Success!',
                     hello: 'Hello',
                     CreateNewForm: '+ Create New Form',
@@ -139,11 +144,11 @@ i18n
                     Edit: 'Edit',
                     Description: 'Description',
                     form_created_successfully: 'Form created successfully',
-                    close: 'Сlose',
+                    close: 'Close',
                     success: 'Success!',
                     Questions: 'Questions',
                     No_questions: 'No questions!',
-                    fetch_forms_error: 'fetch forms error',
+                    fetch_forms_error: 'Fetch forms error',
                     Create: 'Create',
                     Create_The_Same_Form: 'Create the same form',
                     Search_by_name: 'Search by name',
@@ -155,14 +160,20 @@ i18n
                     Delete: 'Delete',
                     Delete_Profile: 'Delete profile',
                     Are_you_sure_you_want_to_delete_your_profile: 'Are you sure you want to delete your profile?',
-                    delete_profile_error: 'delete profile error',
+                    delete_profile_error: 'Delete profile error',
                     Option: 'Option',
                     Integrate_with_Salesforce: 'Integrate with Salesforce',
-                },
-            },
+                    integrationMissingUserData: "Email isn't consist.",
+                    integrationAccountCreated: "The account has been created successfully in Salesforce!",
+                    integrationDuplicateAccount: "The account with such type of data already exists in Salesforce.",
+                    integrationCreationError: "Error while creating account in Salesforce",
+                    integrationUnknownError: "Can't create account in Salesforce. Try again later.",
+                    integrationServerError: "Error while creating account in Salesforce. Try again later."
+                }
+            }
         },
-        lng: language, // язык по умолчанию
-        fallbackLng: 'en', // язык по умолчанию, если перевода нет
+        lng: language,
+        fallbackLng: 'en',
         interpolation: {
             escapeValue: false,
         },
