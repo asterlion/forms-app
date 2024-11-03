@@ -94,6 +94,9 @@ i18n
                     Average: 'Средний',
                     Enter_summary: 'Введите тему',
                     Submit: 'Отправить',
+                    Support_tickets: 'Созданные обращения в поддержку',
+                    No_tickets_found: 'Не найдено созданных обращений.',
+                    Your_Support_Tickets: 'Ваши обращения в поддержку.',
                 },
             },
             en: {
@@ -184,6 +187,9 @@ i18n
                     Enter_summary: "Enter summary",
                     Summary: "Summary",
                     Submit: "Submit",
+                    Support_tickets: "Support tickets",
+                    No_tickets_found: "No tickets found.",
+                    Your_Support_Tickets: "Your support tickets",
                 }
             }
         },

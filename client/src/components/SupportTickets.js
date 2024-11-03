@@ -32,7 +32,7 @@ const SupportTickets = () => {
                         </li>
                     ))
                 ) : (
-                    <p>{t('No_tickets_found.')}</p>
+                    <p>{t('No_tickets_found')}</p>
                 )}
             </ul>
         </div>
