@@ -1,6 +1,6 @@
 import './App.css';
-import React, {useState} from 'react';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Home from './components/Home';
 import Register from './components/Register';
@@ -9,10 +9,13 @@ import Profile from './components/Profile';
 import CreateFormPage from './components/CreateFormPage';
 import PrivateRoute from './components/PrivateRoute';
 import EditForm from './components/EditForm';
+import SupportTicketButton from './components/SupportTicketButton';
+import TicketModal from './components/TicketModal';
 import './i18n';
 
 function App() {
     const [username, setUsername] = useState(localStorage.getItem('username') || '');
+    const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const isAuthenticated = !!username;
 
     const handleLogin = (username) => {
@@ -31,6 +34,10 @@ function App() {
         localStorage.removeItem('username');
         localStorage.removeItem('token');
     };
+    const handleOpenModal = () => {
+        console.log('Opening ticket modal'); // Для отладки
+        setIsTicketModalOpen(true);
+    };
 
     return (
         <Router>
@@ -48,8 +55,10 @@ function App() {
                             <Route path="/edit-form/:formId" element={<EditForm/>}/>
                         </Route>
                     </Routes>
+                    <SupportTicketButton setIsTicketModalOpen={handleOpenModal} />
                 </div>
             </div>
+            {isTicketModalOpen && <TicketModal onClose={() => setIsTicketModalOpen(false)} />}
         </Router>
     );
 }

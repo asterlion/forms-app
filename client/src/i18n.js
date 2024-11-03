@@ -86,7 +86,14 @@ i18n
                     integrationDuplicateAccount: 'Аккаунт с такими данными уже существует в Salesforce.',
                     integrationCreationError: 'Ошибка при создании аккаунта в Salesforce',
                     integrationUnknownError: 'Не удалось создать аккаунт в Salesforce. Пожалуйста, попробуйте позже.',
-                    integrationServerError: 'Произошла ошибка при интеграции с Salesforce. Пожалуйста, попробуйте позже.'
+                    integrationServerError: 'Произошла ошибка при интеграции с Salesforce. Пожалуйста, попробуйте позже.',
+                    Create_Support_Ticket: 'Обратиться в поддержку',
+                    Priority: 'Приоритет',
+                    High: 'Высокий',
+                    Low: 'Низкий',
+                    Average: 'Средний',
+                    Enter_summary: 'Введите тему',
+                    Submit: 'Отправить',
                 },
             },
             en: {
@@ -168,7 +175,15 @@ i18n
                     integrationDuplicateAccount: "The account with such type of data already exists in Salesforce.",
                     integrationCreationError: "Error while creating account in Salesforce",
                     integrationUnknownError: "Can't create account in Salesforce. Try again later.",
-                    integrationServerError: "Error while creating account in Salesforce. Try again later."
+                    integrationServerError: "Error while creating account in Salesforce. Try again later.",
+                    Create_Support_Ticket: "Create support ticket",
+                    Priority: "Priority",
+                    High: "High",
+                    Low: "Low",
+                    Average: "Average",
+                    Enter_summary: "Enter summary",
+                    Summary: "Summary",
+                    Submit: "Submit",
                 }
             }
         },
