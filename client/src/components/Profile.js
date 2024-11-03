@@ -133,6 +133,10 @@ const Profile = ({ username, onDeleteProfile }) => {
         setQuestions([]);
     };
 
+    const handleSupportTickets = () => {
+        navigate('/support-tickets');
+    };
+
     const handleDeleteProfile = async () => {
         if (window.confirm(t('Are_you_sure_you_want_to_delete_your_profile'))) {
             try {
@@ -181,6 +185,10 @@ const Profile = ({ username, onDeleteProfile }) => {
 
             <button onClick={handleSalesforceIntegration} className="btn btn-outline-primary">
                 {t('Integrate_with_Salesforce')}
+            </button>
+
+            <button onClick={handleSupportTickets} className="btn btn-outline-primary">
+                {t('Support_tickets')}
             </button>
 
             <button onClick={handleDeleteProfile} className="btn btn-outline-danger">

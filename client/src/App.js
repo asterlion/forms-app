@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute';
 import EditForm from './components/EditForm';
 import SupportTicketButton from './components/SupportTicketButton';
 import TicketModal from './components/TicketModal';
+import SupportTickets from './components/SupportTickets';
 import './i18n';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
                                element={<Profile username={username} onDeleteProfile={handleDeleteProfile}/>}/>
                         <Route path="/register" element={<Register onLogin={handleLogin}/>}/>
                         <Route path="/login" element={<Login onLogin={handleLogin}/>}/>
+                        <Route path="/support-tickets" element={<SupportTickets />} />
                         <Route element={<PrivateRoute isAuthenticated={isAuthenticated}/>}>
                             <Route path="/create-form" element={<CreateFormPage/>}/>
                             <Route path="/edit-form/:formId" element={<EditForm/>}/>
