@@ -97,6 +97,8 @@ i18n
                     Support_tickets: 'Созданные обращения в поддержку',
                     No_tickets_found: 'Не найдено созданных обращений.',
                     Your_Support_Tickets: 'Ваши обращения в поддержку.',
+                    Ticket_created_successfully: 'Запрос успешно создан',
+                    Error_creating_ticket: 'Ошибка в создании запроса',
                 },
             },
             en: {
@@ -190,6 +192,8 @@ i18n
                     Support_tickets: "Support tickets",
                     No_tickets_found: "No tickets found.",
                     Your_Support_Tickets: "Your support tickets",
+                    Ticket_created_successfully: "Ticket created successfully",
+                    Error_creating_ticket: "Error creating ticket",
                 }
             }
         },

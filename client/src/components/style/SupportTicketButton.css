@@ -1,15 +1,15 @@
 /* SupportTicketButton.css */
 .support-ticket-button {
     position: fixed;
-    bottom: 3rem;
-    right: 3rem;
-    width: 5rem;
-    height: 5rem;
+    bottom: 2rem;
+    right: 2rem;
+    width: 4rem;
+    height: 4rem;
     background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 50%;
-    font-size: 3rem;
+    font-size: 2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
