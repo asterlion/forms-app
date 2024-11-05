@@ -492,8 +492,8 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
             return res.status(404).json({message: 'Пользователь не найден.'});
         }
 
-        const username = user.username; // Получаем имя пользователя
-        const userEmail = user.email; // Получаем email пользователя
+        const username = user.username;
+        const userEmail = user.email;
 
         const emailProfile = 'astreiko1.22@gmail.com';
         const yourDomain = 'https://astreiko.atlassian.net';
@@ -593,7 +593,59 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/api/jira/tickets', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
+    console.log('юзер айди', userId)
+    try {
+        const user = await User.findByPk(userId);
 
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден.' });
+        }
+
+        const userEmail = user.email;
+        console.log('почта', userEmail);
+
+        const emailProfile = 'astreiko1.22@gmail.com';
+        const yourDomain = 'https://astreiko.atlassian.net';
+        const apiToken = 'ATATT3xFfGF0gcE9O9fwaDYtfdaf8anpSW9-txWMKC6DvvAV91WK_Dv4v9VLAexD3kRiO6XSUNExMqZ1IPO6B9jL0OoeDwJMF9BAZJbXR9g8Eurmk36EaO2uyN2xxNul9zZ3WtrnU1JzvLztjJ-2K7dl1WU4KAm1OadVAG06nZgWfxdGukkpbG4=0F6381D0';
+        const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
+
+        const jql = `reporter="${userEmail}"`;
+
+        const response = await axios.get(`${yourDomain}/rest/api/3/search`, {
+            params: {
+                jql: jql,
+            },
+            headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/json',
+            },
+        });
+
+        console.log('Ответ от Jira:', response.data);
+
+        const tickets = response.data.issues.map(ticket => {
+            const customQueueUrl = `https://astreiko.atlassian.net/jira/servicedesk/projects/GSDY/queues/custom/1/${ticket.key}`;
+
+            return {
+                id: ticket.id,
+                key: ticket.key,
+                self: ticket.self,
+                summary: ticket.fields.summary,
+                priority: ticket.fields.priority ? ticket.fields.priority.name : 'Not set',
+                status: ticket.fields.status ? ticket.fields.status.name : 'Unknown',
+                customQueueUrl: customQueueUrl
+            };
+        });
+
+        res.json(tickets);
+        console.log('Ответ от Jira-tickets:', tickets);
+    } catch (error) {
+        console.error('Ошибка при получении тикетов из Jira:', error);
+        res.status(500).json({ message: 'Ошибка при получении тикетов' });
+    }
+});
 app.delete('/api/delete-profile', authenticateToken, async (req, res) => {
     const userId = req.user.userId;
     console.log('userId', userId);
