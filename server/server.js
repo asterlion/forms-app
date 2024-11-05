@@ -497,14 +497,9 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
 
         const emailProfile = 'astreiko1.22@gmail.com';
         const yourDomain = 'https://astreiko.atlassian.net';
-        const apiToken = 'ATATT3xFfGF0uOrXQAGk1T16wkonOytndb4Z6_fpuA9K2yEpWkB5wRWyUnPENTHEb7EFfzgpTr9imLtH-Q_sA99OiZWOd0OaxygZaRbTtrgBLf5WMdLmeZXa3u35hvVjKXAPsyJB1rE6a0t1AFtheqOvRP1CRGn00_WfRVAba2YKpcxDFl8WPmU=1ABADF67';
+        const apiToken = 'ATATT3xFfGF0gcE9O9fwaDYtfdaf8anpSW9-txWMKC6DvvAV91WK_Dv4v9VLAexD3kRiO6XSUNExMqZ1IPO6B9jL0OoeDwJMF9BAZJbXR9g8Eurmk36EaO2uyN2xxNul9zZ3WtrnU1JzvLztjJ-2K7dl1WU4KAm1OadVAG06nZgWfxdGukkpbG4=0F6381D0';
         const projectKey = 'GSDY';
         const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
-
-        console.log(username, userEmail);
-        console.log('урл', currentPageUrl);
-        console.log('desc', description);
-        console.log(authHeader);
 
         // Шаг 1: Проверяем, существует ли пользователь в Jira
         let jiraUser;
@@ -570,21 +565,7 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
                                 }
                             ]
                         },
-                        customfield_10058: {
-                            type: "doc",
-                            version: 1,
-                            content: [
-                                {
-                                    type: "paragraph",
-                                    content: [
-                                        {
-                                            type: "text",
-                                            text: currentPageUrl
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
+                        customfield_10059: currentPageUrl,
                         priority: { name: priority || "Medium" },
                         issuetype: { name: "Support" },
                         reporter: { accountId: jiraUser.accountId }
