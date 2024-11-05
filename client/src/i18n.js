@@ -99,6 +99,7 @@ i18n
                     Your_Support_Tickets: 'Ваши обращения в поддержку.',
                     Ticket_created_successfully: 'Запрос успешно создан',
                     Error_creating_ticket: 'Ошибка в создании запроса',
+                    Enter_description: 'Введите описание',
                 },
             },
             en: {
@@ -194,6 +195,7 @@ i18n
                     Your_Support_Tickets: "Your support tickets",
                     Ticket_created_successfully: "Ticket created successfully",
                     Error_creating_ticket: "Error creating ticket",
+                    Enter_description: "Enter description",
                 }
             }
         },

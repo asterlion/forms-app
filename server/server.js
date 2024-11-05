@@ -437,12 +437,15 @@ app.post('/api/salesforce-token', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error("Ошибка получения токена:", error.response ? error.response.data : error.message);
-        res.status(400).json({ error: "Ошибка при получении токена", details: error.response ? error.response.data : error.message });
+        res.status(400).json({
+            error: "Ошибка при получении токена",
+            details: error.response ? error.response.data : error.message
+        });
     }
 });
 
 app.post('/api/salesforce/account', async (req, res) => {
-    const { username, email } = req.body;
+    const {username, email} = req.body;
 
     try {
         // Получаем токен
@@ -454,7 +457,7 @@ app.post('/api/salesforce/account', async (req, res) => {
                 username: "tam@itramsition.training",
                 password: "maN9TfQnvDzinG01vu5TMhU48pVDTpqR0wuyO"
             }).toString(),
-            { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
         );
 
         const accessToken = tokenResponse.data.access_token;
@@ -463,8 +466,8 @@ app.post('/api/salesforce/account', async (req, res) => {
         // Создаем аккаунт в Salesforce
         const accountResponse = await axios.post(
             `${instanceUrl}/services/data/v54.0/sobjects/Account`,
-            { Name: username, Email__c: email },
-            { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+            {Name: username, Email__c: email},
+            {headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'}}
         );
 
         res.status(200).json(accountResponse.data);
@@ -478,7 +481,7 @@ app.post('/api/salesforce/account', async (req, res) => {
 });
 
 app.post('/api/tickets/create', authenticateToken, async (req, res) => {
-    const { summary, priority, template, currentPageUrl } = req.body;
+    const {summary, priority, description, currentPageUrl} = req.body;
     const userId = req.user.userId; // Получаем userId из токена
 
     try {
@@ -486,7 +489,7 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
         const user = await User.findByPk(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден.' });
+            return res.status(404).json({message: 'Пользователь не найден.'});
         }
 
         const username = user.username; // Получаем имя пользователя
@@ -494,11 +497,14 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
 
         const emailProfile = 'astreiko1.22@gmail.com';
         const yourDomain = 'https://astreiko.atlassian.net';
-        const apiToken = 'ATATT3xFfGF0v_NiiyrTMyZBvHv8N_Fn1aSH7a9O016xWPslFjLHPMvY3L7s8Bmy_vtYMqRWPYrei9tEiNDbXK743TApynHajfYbp6mWXY_SohIknxHImjEh7fWwOoTSD2EzADi1LzJwu48bnBtnV1eqo95Rl25o-jogoJW44dSUlOFQOOoPRWU=E96DB84C';
+        const apiToken = 'ATATT3xFfGF0uOrXQAGk1T16wkonOytndb4Z6_fpuA9K2yEpWkB5wRWyUnPENTHEb7EFfzgpTr9imLtH-Q_sA99OiZWOd0OaxygZaRbTtrgBLf5WMdLmeZXa3u35hvVjKXAPsyJB1rE6a0t1AFtheqOvRP1CRGn00_WfRVAba2YKpcxDFl8WPmU=1ABADF67';
         const projectKey = 'GSDY';
         const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
 
         console.log(username, userEmail);
+        console.log('урл', currentPageUrl);
+        console.log('desc', description);
+        console.log(authHeader);
 
         // Шаг 1: Проверяем, существует ли пользователь в Jira
         let jiraUser;
@@ -513,7 +519,7 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
             jiraUser = userResponse.data[0]; // Получаем первого пользователя из списка
         } catch (userError) {
             console.error('Ошибка при поиске пользователя в Jira:', userError.message);
-            return res.status(500).json({ error: 'Не удалось получить данные пользователя Jira' });
+            return res.status(500).json({error: 'Не удалось получить данные пользователя Jira'});
         }
 
         // Шаг 2: Если пользователь не найден, создаем новый аккаунт
@@ -537,7 +543,7 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
                 console.log('Пользователь успешно создан:', jiraUser);
             } catch (createUserError) {
                 console.error('Ошибка при создании пользователя в Jira:', createUserError.message);
-                return res.status(500).json({ error: 'Не удалось создать нового пользователя Jira' });
+                return res.status(500).json({error: 'Не удалось создать нового пользователя Jira'});
             }
         }
 
@@ -548,21 +554,40 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
                 {
                     fields: {
                         project: { key: projectKey },
-                        summary,
-                        description: [
-                            {
-                                type: 'paragraph',
-                                content: [
-                                    {
-                                        text: `Ссылка на страницу: ${currentPageUrl}`,
-                                        type: 'text'
-                                    }
-                                ]
-                            }
-                        ],
-                        priority: { name: priority || 'Medium' },
-                        issuetype: { name: 'Support' },
-                        reporter: { accountId: jiraUser.accountId } // Указываем идентификатор аккаунта
+                        summary: summary,
+                        description: {
+                            type: "doc",
+                            version: 1,
+                            content: [
+                                {
+                                    type: "paragraph",
+                                    content: [
+                                        {
+                                            type: "text",
+                                            text: description
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        customfield_10058: {
+                            type: "doc",
+                            version: 1,
+                            content: [
+                                {
+                                    type: "paragraph",
+                                    content: [
+                                        {
+                                            type: "text",
+                                            text: currentPageUrl
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        priority: { name: priority || "Medium" },
+                        issuetype: { name: "Support" },
+                        reporter: { accountId: jiraUser.accountId }
                     }
                 },
                 {
@@ -574,19 +599,18 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
             );
 
             const ticketUrl = `${yourDomain}/browse/${createTicketResponse.data.key}`;
-            res.json({ message: 'Тикет успешно создан', ticketUrl });
+            res.json({message: 'Тикет успешно создан', ticketUrl});
 
         } catch (createTicketError) {
             console.error('Ошибка при создании тикета в Jira:', createTicketError.response ? createTicketError.response.data : createTicketError.message);
-            res.status(500).json({ error: 'Не удалось создать тикет в Jira' });
+            res.status(500).json({error: 'Не удалось создать тикет в Jira'});
         }
 
     } catch (error) {
         console.error('Общая ошибка:', error.message);
-        res.status(500).json({ error: 'Произошла ошибка при обработке запроса' });
+        res.status(500).json({error: 'Произошла ошибка при обработке запроса'});
     }
 });
-
 
 
 app.delete('/api/delete-profile', authenticateToken, async (req, res) => {

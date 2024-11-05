@@ -7,6 +7,7 @@ import API_URL from "../config";
 const TicketModal = ({onClose}) => {
     const {t} = useTranslation();
     const [summary, setSummary] = useState('');
+    const [description, setDescription] = useState('');
     const [priority, setPriority] = useState('Medium');
 
     useEffect(() => {
@@ -30,6 +31,7 @@ const TicketModal = ({onClose}) => {
                 `${API_URL}/api/tickets/create`,
                 {
                     summary,
+                    description,
                     priority,
                     template: 'Default Template',
                     currentPageUrl: window.location.href,
@@ -67,6 +69,17 @@ const TicketModal = ({onClose}) => {
                             placeholder={t('Enter_summary')}
                             value={summary}
                             onChange={(e) => setSummary(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="description">{t('Description')}:</label>
+                        <textarea
+                            name="description"
+                            className="form-control"
+                            required
+                            placeholder={t('Enter_description')}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
                     <div className="form-group">
