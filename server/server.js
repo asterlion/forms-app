@@ -479,79 +479,28 @@ app.post('/api/salesforce/account', async (req, res) => {
 
 app.post('/api/tickets/create', authenticateToken, async (req, res) => {
     const { summary, priority, template, currentPageUrl } = req.body;
-    const username = req.user.username;
-    const userEmail = req.user.email;
-    const emailProfile = 'astreiko1.22@gmail.com';
-    const yourDomain = 'https://astreiko.atlassian.net';
-    const apiToken = 'ATATT3xFfGF0aZb1CYb4O09vSdY67uIzS6DsIOutGz0hvk5J82PbX6BiNc67we9m52nveANqUMWvqRie7KIDuk_B1pWmgFExwb1d59RqWU1Gbt78SU2DGzblIwB47tKe6Nrp6n5fHShCi8OZlUspDKZhUZ7hBpfJEYQP2sZDI7cvnkVWu3rPedI=1E3E178D';
-    const projectKey = 'GSDY';
-    const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
+    const userId = req.user.userId; // Получаем userId из токена
 
     try {
-        // Проверка, существует ли пользователь
-        let jiraUser;
-        try {
-            const userResponse = await axios.get(`${yourDomain}/rest/api/3/user/search?query=${emailProfile}`, {
-                headers: {
-                    Authorization: authHeader,
-                    'Content-Type': 'application/json'
-                }
-            });
+        // Получаем данные пользователя из базы данных
+        const user = await User.findByPk(userId);
 
-            jiraUser = userResponse.data[0]; // Предполагаем, что первый результат поиска - это нужный пользователь
-        } catch (userError) {
-            console.error('Error retrieving Jira user:', userError.message);
-            return res.status(500).json({ error: 'Failed to retrieve Jira user' });
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден.' });
         }
 
-        // Если пользователь не найден, отправляем сообщение об ошибке
-        if (!jiraUser) {
-            return res.status(404).json({ error: 'User not found in Jira. Please invite the user or check permissions.' });
-        }
+        const username = user.username; // Получаем имя пользователя
+        const userEmail = user.email; // Получаем email пользователя
 
-        // Создание тикета от имени найденного пользователя
-        const createTicketResponse = await axios.post(
-            `${yourDomain}/rest/api/3/issue`,
-            {
-                fields: {
-                    project: { key: projectKey },
-                    summary,
-                    description: [],
-                    priority: { name: priority || 'Medium' },
-                    issuetype: { name: 'Support' },
-                    reporter: { name: userEmail }
-                }
-            },
-            {
-                headers: {
-                    Authorization: authHeader,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
+        const emailProfile = 'astreiko1.22@gmail.com';
+        const yourDomain = 'https://astreiko.atlassian.net';
+        const apiToken = 'ATATT3xFfGF0v_NiiyrTMyZBvHv8N_Fn1aSH7a9O016xWPslFjLHPMvY3L7s8Bmy_vtYMqRWPYrei9tEiNDbXK743TApynHajfYbp6mWXY_SohIknxHImjEh7fWwOoTSD2EzADi1LzJwu48bnBtnV1eqo95Rl25o-jogoJW44dSUlOFQOOoPRWU=E96DB84C';
+        const projectKey = 'GSDY';
+        const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
 
-        const ticketUrl = `${yourDomain}/browse/${createTicketResponse.data.key}`;
-        res.json({ message: 'Ticket created successfully', ticketUrl });
+        console.log(username, userEmail);
 
-    } catch (error) {
-        console.error('Error creating Jira ticket:', error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Failed to create ticket in Jira' });
-    }
-});
-
-
-app.post('/api/tickets/create', authenticateToken, async (req, res) => {
-    const { summary, priority, template, currentPageUrl } = req.body;
-    const username = req.user.username;
-    const userEmail = req.user.email;
-    const emailProfile = 'astreiko1.22@gmail.com';
-    const yourDomain = 'https://astreiko.atlassian.net';
-    const apiToken = 'ATATT3xFfGF0aZb1CYb4O09vSdY67uIzS6DsIOutGz0hvk5J82PbX6BiNc67we9m52nveANqUMWvqRie7KIDuk_B1pWmgFExwb1d59RqWU1Gbt78SU2DGzblIwB47tKe6Nrp6n5fHShCi8OZlUspDKZhUZ7hBpfJEYQP2sZDI7cvnkVWu3rPedI=1E3E178D';
-    const projectKey = 'GSDY';
-    const authHeader = `Basic ${Buffer.from(`${emailProfile}:${apiToken}`).toString('base64')}`;
-
-    try {
-        // Проверка, существует ли пользователь
+        // Шаг 1: Проверяем, существует ли пользователь в Jira
         let jiraUser;
         try {
             const userResponse = await axios.get(`${yourDomain}/rest/api/3/user/search?query=${userEmail}`, {
@@ -561,20 +510,21 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
                 }
             });
 
-            jiraUser = userResponse.data[0]; // Предполагаем, что первый результат поиска - нужный пользователь
+            jiraUser = userResponse.data[0]; // Получаем первого пользователя из списка
         } catch (userError) {
-            console.error('Error retrieving Jira user:', userError.message);
+            console.error('Ошибка при поиске пользователя в Jira:', userError.message);
+            return res.status(500).json({ error: 'Не удалось получить данные пользователя Jira' });
         }
 
-        // Если пользователь не найден, создаем его
+        // Шаг 2: Если пользователь не найден, создаем новый аккаунт
         if (!jiraUser) {
             try {
                 const createUserResponse = await axios.post(
                     `${yourDomain}/rest/api/3/user`,
                     {
                         emailAddress: userEmail,
-                        displayName: username,
-                        notification: 'true'
+                        accountType: "customer",
+                        products: ["jira-servicedesk"]
                     },
                     {
                         headers: {
@@ -583,42 +533,57 @@ app.post('/api/tickets/create', authenticateToken, async (req, res) => {
                         }
                     }
                 );
-
-                jiraUser = createUserResponse.data; // Получаем созданного пользователя
-                console.log('User created in Jira:', jiraUser.accountId);
+                jiraUser = createUserResponse.data;
+                console.log('Пользователь успешно создан:', jiraUser);
             } catch (createUserError) {
-                console.error('Error creating Jira user:', createUserError.message);
-                return res.status(500).json({ error: 'Failed to create Jira user' });
+                console.error('Ошибка при создании пользователя в Jira:', createUserError.message);
+                return res.status(500).json({ error: 'Не удалось создать нового пользователя Jira' });
             }
         }
 
-        // Создание тикета от имени нового или найденного пользователя
-        const createTicketResponse = await axios.post(
-            `${yourDomain}/rest/api/3/issue`,
-            {
-                fields: {
-                    project: { key: projectKey },
-                    summary,
-                    description: [],
-                    priority: { name: priority || 'Medium' },
-                    issuetype: { name: 'Support' },
-                    reporter: { id: jiraUser.accountId } // Используем ID нового пользователя
+        // Шаг 3: Создаем тикет от имени найденного или нового пользователя
+        try {
+            const createTicketResponse = await axios.post(
+                `${yourDomain}/rest/api/3/issue`,
+                {
+                    fields: {
+                        project: { key: projectKey },
+                        summary,
+                        description: [
+                            {
+                                type: 'paragraph',
+                                content: [
+                                    {
+                                        text: `Ссылка на страницу: ${currentPageUrl}`,
+                                        type: 'text'
+                                    }
+                                ]
+                            }
+                        ],
+                        priority: { name: priority || 'Medium' },
+                        issuetype: { name: 'Support' },
+                        reporter: { accountId: jiraUser.accountId } // Указываем идентификатор аккаунта
+                    }
+                },
+                {
+                    headers: {
+                        Authorization: authHeader,
+                        'Content-Type': 'application/json'
+                    }
                 }
-            },
-            {
-                headers: {
-                    Authorization: authHeader,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
+            );
 
-        const ticketUrl = `${yourDomain}/browse/${createTicketResponse.data.key}`;
-        res.json({ message: 'Ticket created successfully', ticketUrl });
+            const ticketUrl = `${yourDomain}/browse/${createTicketResponse.data.key}`;
+            res.json({ message: 'Тикет успешно создан', ticketUrl });
+
+        } catch (createTicketError) {
+            console.error('Ошибка при создании тикета в Jira:', createTicketError.response ? createTicketError.response.data : createTicketError.message);
+            res.status(500).json({ error: 'Не удалось создать тикет в Jira' });
+        }
 
     } catch (error) {
-        console.error('Error creating Jira ticket:', error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Failed to create ticket in Jira' });
+        console.error('Общая ошибка:', error.message);
+        res.status(500).json({ error: 'Произошла ошибка при обработке запроса' });
     }
 });
 
