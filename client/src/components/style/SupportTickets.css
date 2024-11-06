@@ -37,3 +37,21 @@ body.dark-theme .support-tickets-page .table a:hover {
     color: #73c2fb; /* Цвет ссылки при наведении */
     text-decoration: underline;
 }
+
+/* CSS для кнопок пагинации в темной теме */
+.dark-theme .pagination .page-link {
+    background-color: #546375;  /* Темный фон для кнопок */
+    color: #ddd;             /* Светлый текст для кнопок */
+    border: 1px solid #666;  /* Темная граница */
+}
+
+.dark-theme .pagination .page-link:hover {
+    background-color: #555;  /* Светлее при наведении */
+}
+
+.dark-theme .pagination .page-item.active .page-link {
+    background-color: #617487;  /* Более светлый фон для активной кнопки */
+    color: #fff;             /* Белый текст для активной кнопки */
+    border-color: #888;      /* Граница активной кнопки */
+}
+
