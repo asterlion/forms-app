@@ -106,6 +106,11 @@ i18n
                     Status: 'Статус',
                     Link: 'Ссылка',
                     View_Ticket: 'Перейти к обращению',
+                    Salesforce_Integration: 'Интеграция с Salesforce',
+                    Phone_Number: 'Отправьте номер вашего телефона',
+                    phoneNumberUpdated: 'Номер телефона отправлен',
+                    phoneNumberUpdateFailed: 'Ошибка обновления номера телефона',
+                    phoneNumberUpdateError: 'Ошибка обновления телефона',
                 },
             },
             en: {
@@ -207,6 +212,11 @@ i18n
                     Status: "Status",
                     Link: "Link",
                     View_Ticket: "View ticket",
+                    Salesforce_Integration: "Salesforce integration",
+                    Phone_Number: "Sent your phone number",
+                    phoneNumberUpdated: "Phone number updated",
+                    phoneNumberUpdateFailed: "Phone number update failed",
+                    phoneNumberUpdateError: "Phone number update error",
                 }
             }
         },

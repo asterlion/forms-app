@@ -19,7 +19,7 @@ const corsOptions = {
         'https://itransition80-dev-ed.develop.my.salesforce.com',
         'https://astreiko.atlassian.net'
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
@@ -477,6 +477,74 @@ app.post('/api/salesforce/account', async (req, res) => {
             error: "Ошибка при интеграции с Salesforce",
             details: error.response ? error.response.data : error.message
         });
+    }
+});
+
+app.patch('/api/salesforce/update-phone', authenticateToken, async (req, res) => {
+    const { phoneNumber } = req.body;
+    const userId = req.user.userId;
+
+    console.log('айдишник пользователя', userId);
+
+    try {
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Пользователь не найден." });
+        }
+
+        const username = user.username;
+        const userEmail = user.email;
+
+        const tokenResponse = await axios.post("https://login.salesforce.com/services/oauth2/token",
+            new URLSearchParams({
+                grant_type: "password",
+                client_id: "3MVG9PwZx9R6_UrfWP3VD3jJz0cZKiz4ETbOnBtbiypkB..zpZorn_YiviQP2.pv0Ud1d7Pa2F6zffKXTLXHb",
+                client_secret: "B13ECC1C9968AAEED2E3DE79511528269E5CB930EB3C8CAC3E46835605E18DA5",
+                username: "tam@itramsition.training",
+                password: "maN9TfQnvDzinG01vu5TMhU48pVDTpqR0wuyO"
+            }).toString(),
+            {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+        const instanceUrl = tokenResponse.data.instance_url;
+
+        console.log('токен доступа', accessToken);
+
+        // Поиск аккаунта в Salesforce по email пользователя
+        const queryResponse = await axios.get(
+            `${instanceUrl}/services/data/v54.0/query`,
+            {
+                headers: { Authorization: `Bearer ${accessToken}` },
+                params: {
+                    q: `SELECT Id FROM Account WHERE Email__c = '${userEmail}'`
+                }
+            }
+        );
+
+        // Проверяем, найден ли аккаунт
+        if (queryResponse.data.records.length === 0) {
+            return res.status(404).json({ success: false, message: "Аккаунт не найден в Salesforce" });
+        }
+
+        const accountId = queryResponse.data.records[0].Id;
+
+        await axios.patch(
+            `${instanceUrl}/services/data/v54.0/sobjects/Account/${accountId}`,
+            { Name: username, Phone: phoneNumber },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        res.json({ success: true, message: "Номер телефона успешно обновлен" });
+    } catch (error) {
+        console.error("Ошибка при обновлении номера телефона:", error);
+        res.status(500).json({ success: false, message: "Не удалось обновить номер телефона" });
     }
 });
 

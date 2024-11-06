@@ -1,4 +1,5 @@
 import API_URL from '../config';
+import axios from "axios";
 
 const getSalesforceToken = async () => {
     try {
@@ -42,4 +43,25 @@ export const createSalesforceAccount = async (username, email) => {
         throw error;
     }
 };
+
+export const updateSalesforceAccountPhoneNumber = async (phoneNumber) => {
+    try {
+
+        const token = localStorage.getItem("token");
+
+        const response = await axios.patch(`${API_URL}/api/salesforce/update-phone`,
+            { phoneNumber: phoneNumber },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при обновлении данных в Salesforce:", error);
+        throw error;
+    }
+};
+
 

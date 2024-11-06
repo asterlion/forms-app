@@ -1,18 +1,23 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { createSalesforceAccount } from './salesforceIntegration';
+import React, {useEffect, useState, useCallback} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
+import {createSalesforceAccount, updateSalesforceAccountPhoneNumber} from './salesforceIntegration';
 import API_URL from '../config';
+import {Modal, Button} from 'react-bootstrap';
 import './style/Profile.css';
-import { Modal, Button } from 'react-bootstrap';
 
-const Profile = ({ username, onDeleteProfile }) => {
-    const { t } = useTranslation();
+const Profile = ({username, onDeleteProfile}) => {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [forms, setForms] = useState([]);
     const [selectedForm, setSelectedForm] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showFormModal, setShowFormModal] = useState(false);
+    const [showIntegrationModal, setShowIntegrationModal] = useState(false);
     const [questions, setQuestions] = useState([]);
+    const [integrationMessage, setIntegrationMessage] = useState('');
     const token = localStorage.getItem('token');
 
     const fetchForms = useCallback(async () => {
@@ -55,7 +60,7 @@ const Profile = ({ username, onDeleteProfile }) => {
         }
 
         const userData = await response.json();
-        console.log("Данные пользователя:", userData); // Добавьте это для логирования
+        console.log("Данные пользователя:", userData);
         return userData;
     };
 
@@ -91,7 +96,7 @@ const Profile = ({ username, onDeleteProfile }) => {
     const handleSalesforceIntegration = async () => {
         try {
             const userData = await fetchUserData();
-            const { username, email } = userData;
+            const {username, email} = userData;
 
             if (!username || !email) {
                 alert(t("integrationMissingUserData"));
@@ -101,26 +106,50 @@ const Profile = ({ username, onDeleteProfile }) => {
             const response = await createSalesforceAccount(username, email);
 
             if (response.success) {
-                alert(t("integrationAccountCreated"));
+                setIntegrationMessage(t("integrationAccountCreated"));
             } else if (response.errors && response.errors.length > 0) {
                 if (response.errors[0].statusCode === 'DUPLICATES_DETECTED') {
-                    alert(t("integrationDuplicateAccount"));
+                    setIntegrationMessage(t("integrationDuplicateAccount"));
+                    setShowIntegrationModal(true);
                 } else {
-                    alert(t("integrationCreationError", { message: response.errors[0].message }));
+                    setIntegrationMessage(t("integrationCreationError", {message: response.errors[0].message}));
                 }
             } else {
-                alert(t("integrationUnknownError"));
+                setIntegrationMessage(t("integrationUnknownError"));
             }
+            setShowIntegrationModal(true);
         } catch (error) {
             console.error("Ошибка интеграции с Salesforce:", error);
-            alert(t("integrationDuplicateAccount"));
+            setIntegrationMessage(t("integrationDuplicateAccount"));
+            setShowIntegrationModal(true);
+        }
+    };
+
+    const handleSubmitPhoneNumber = async () => {
+        if (!phoneNumber) {
+            setErrorMessage(t("phoneNumberRequired"));
+            return;
+        }
+
+        try {
+            // Здесь делаем запрос в Salesforce API для обновления данных
+            const response = await updateSalesforceAccountPhoneNumber(phoneNumber);
+
+            if (response.success) {
+                setSuccessMessage(t("phoneNumberUpdated"));
+            } else {
+                setErrorMessage(t("phoneNumberUpdateFailed"));
+            }
+        } catch (error) {
+            console.error("Ошибка при отправке номера телефона в Salesforce:", error);
+            setErrorMessage(t("phoneNumberUpdateError"));
         }
     };
 
     const handleFormClick = async (form) => {
         setSelectedForm(form);
         await fetchQuestions(form.id);
-        setShowModal(true);
+        setShowFormModal(true);
     };
 
     const handleEditForm = (formId) => {
@@ -128,7 +157,7 @@ const Profile = ({ username, onDeleteProfile }) => {
     };
 
     const handleCloseModal = () => {
-        setShowModal(false);
+        setShowFormModal(false);
         setSelectedForm(null);
         setQuestions([]);
     };
@@ -196,7 +225,7 @@ const Profile = ({ username, onDeleteProfile }) => {
             </button>
 
             {selectedForm && (
-                <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal show={showFormModal} onHide={handleCloseModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>{t('Name')}: {selectedForm.name}</Modal.Title>
                     </Modal.Header>
@@ -226,6 +255,46 @@ const Profile = ({ username, onDeleteProfile }) => {
                     </Modal.Footer>
                 </Modal>
             )}
+
+            <Modal show={showIntegrationModal} onHide={() => setShowIntegrationModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t('Salesforce_Integration')}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {integrationMessage && <p>{integrationMessage}</p>}
+
+                    {(integrationMessage === t("integrationAccountCreated") || integrationMessage === t("integrationDuplicateAccount")) && (
+                        <div>
+                            <div className="form-group">
+                                <label htmlFor="phoneNumber">{t('Phone_Number')}</label>
+                                <input
+                                    type="tel"
+                                    id="phoneNumber"
+                                    className="form-control"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                />
+                            </div>
+
+                            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                            {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="primary"
+                        onClick={handleSubmitPhoneNumber}
+                        disabled={!phoneNumber}
+                    >
+                        {t('Submit')}
+                    </Button>
+                    <Button variant="secondary" onClick={() => setShowIntegrationModal(false)}>
+                        {t('Close')}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
     );
 };
