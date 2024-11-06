@@ -42,6 +42,7 @@ const authenticateToken = (req, res, next) => {
 
     jwt.verify(token, secretKey, (err, user) => {
         if (err) return res.sendStatus(403);
+        console.log('Decoded token:', user);
         req.user = user;
         next();
     });
@@ -51,22 +52,18 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/register', async (req, res) => {
     const {username, email, password} = req.body;
 
-    // Проверка наличия всех необходимых данных
     if (!username || !email || !password) {
         return res.status(400).json({error: 'Недостаточно данных для регистрации.'});
     }
 
     try {
-        // Хэшируем пароль
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Проверяем, существует ли пользователь с таким email
         const existingUser = await User.findOne({where: {email}});
         if (existingUser) {
             return res.status(400).json({error: 'Пользователь с таким email уже существует.'});
         }
 
-        // Создаем пользователя в базе данных
         const newUser = await User.create({
             username: username,
             email: email,
@@ -74,14 +71,11 @@ app.post('/api/register', async (req, res) => {
             status: 'active'
         });
 
-        // Назначаем пользователю роль "user"
         const role = await Role.findOne({where: {role_name: 'user'}});
         await newUser.addRole(role);
 
-        // Генерируем токен
-        const token = jwt.sign({username: newUser.username}, secretKey, {expiresIn: '1h'});
+        const token = jwt.sign({ userId: newUser.id, username: newUser.username }, secretKey, { expiresIn: '1h' });
 
-        // Возвращаем успешный ответ с токеном и именем пользователя
         res.status(201).json({success: true, token, username: newUser.username});
     } catch (error) {
         console.error('Ошибка при регистрации:', error);
@@ -152,11 +146,10 @@ app.post('/api/forms', authenticateToken, async (req, res) => {
             }
         }
 
-        // Сохраняем связь между формой и вопросом с указанием порядка и templateId
         await TemplateQuestions.create({
-            question_order: index + 1, // Указываем порядок вопроса (начиная с 1)
+            question_order: index + 1,
             questionId: createdQuestion.id,
-            templateId: form.id, // Передаем templateId
+            templateId: form.id,
         });
     }
 
